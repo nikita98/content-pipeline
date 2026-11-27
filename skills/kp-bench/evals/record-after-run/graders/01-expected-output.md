@@ -1,0 +1,7 @@
+---
+type: llm
+focus: trace
+weight: 1
+---
+
+The result matches this description: Агент вызывает record.py с --test asr --variant gigaam --tester nikita, метриками wer=0.068 cer=0.021 run_s=41 word_timestamps=1, --setup-min 20 и вердиктом; затем предлагает summary.py и следующий вариант теста.

@@ -5,3 +5,10 @@ node_modules/
 .DS_Store
 out/
 renders/
+# стенд этапа 3: тяжёлые файлы и окружения
+bench/runs/
+bench/tools/
+.venv-*/
+# копии скиллов, ставит tools/install_skills.py
+.claude/skills/
+.agents/skills/

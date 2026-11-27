@@ -1,0 +1,635 @@
+{
+ "updated": "2026-11-27",
+ "note": "Каталог тестов этапа 3. Варианты ссылаются на library.json по полю lib. Порядок прогона и команды — skills/kp-bench/references/tests.md. Результаты — bench/results/, свод — site/data/bench_results.json.",
+ "tests": [
+  {
+   "id": "asr",
+   "group": "free",
+   "steps": [
+    "1",
+    "9",
+    "10",
+    "11"
+   ],
+   "title": "Распознавание русской речи",
+   "goal": "Точность и пословные таймкоды для субтитров, вырезки слов-паразитов и обратной проверки озвучки.",
+   "input": "Запись эксперта 1–2 мин по тексту script_ru.txt; эталон — script_ru_spoken.txt",
+   "metrics": [
+    {
+     "id": "wer",
+     "label": "WER",
+     "better": "lower",
+     "unit": "доля"
+    },
+    {
+     "id": "cer",
+     "label": "CER",
+     "better": "lower",
+     "unit": "доля"
+    },
+    {
+     "id": "word_timestamps",
+     "label": "Таймкоды слов",
+     "better": "higher",
+     "unit": "0/1"
+    },
+    {
+     "id": "run_s",
+     "label": "Время, с",
+     "better": "lower",
+     "unit": "с"
+    }
+   ],
+   "variants": [
+    {
+     "id": "gigaam",
+     "name": "GigaAM v3",
+     "lib": "gigaam",
+     "price": "бесплатно",
+     "needs": "CPU или GPU",
+     "test_cost": "0"
+    },
+    {
+     "id": "whisperx",
+     "name": "WhisperX large-v3",
+     "lib": "whisperx",
+     "price": "бесплатно",
+     "needs": "CPU (int8) или GPU",
+     "test_cost": "0"
+    },
+    {
+     "id": "faster-whisper",
+     "name": "faster-whisper large-v3",
+     "lib": "whisper-large-v3",
+     "price": "бесплатно",
+     "needs": "CPU или GPU",
+     "test_cost": "0"
+    }
+   ]
+  },
+  {
+   "id": "voice-clean",
+   "group": "free",
+   "steps": [
+    "10"
+   ],
+   "title": "Очистка записи эксперта",
+   "goal": "Шум, громкость −14 LUFS / −1 dBTP, вырезка пауз без съеденных слов.",
+   "input": "Та же запись эксперта",
+   "metrics": [
+    {
+     "id": "lufs",
+     "label": "Громкость, LUFS",
+     "better": "target",
+     "target": -14,
+     "unit": "LUFS"
+    },
+    {
+     "id": "true_peak",
+     "label": "Пик, dBTP",
+     "better": "lower",
+     "unit": "dBTP"
+    },
+    {
+     "id": "cut_s",
+     "label": "Вырезано пауз, с",
+     "better": "higher",
+     "unit": "с"
+    },
+    {
+     "id": "quality",
+     "label": "На слух, 1–5",
+     "better": "higher",
+     "unit": "балл"
+    }
+   ],
+   "variants": [
+    {
+     "id": "dfn-chain",
+     "name": "DeepFilterNet → loudnorm → auto-editor",
+     "lib": "deepfilternet",
+     "price": "бесплатно",
+     "needs": "CPU",
+     "test_cost": "0"
+    },
+    {
+     "id": "ffmpeg-only",
+     "name": "ffmpeg afftdn → loudnorm → silenceremove",
+     "lib": "ffmpeg-audio-filters",
+     "price": "бесплатно",
+     "needs": "CPU",
+     "test_cost": "0"
+    }
+   ]
+  },
+  {
+   "id": "stress",
+   "group": "free",
+   "steps": [
+    "8"
+   ],
+   "title": "Нормализация текста и ударения",
+   "goal": "Числа, даты, валюта, аббревиатуры словами; ударения и омографы перед синтезом.",
+   "input": "stress_ru.txt (10 строк с омографами, числами, латиницей)",
+   "metrics": [
+    {
+     "id": "errors",
+     "label": "Ошибок из 10 строк",
+     "better": "lower",
+     "unit": "шт"
+    },
+    {
+     "id": "run_s",
+     "label": "Время, с",
+     "better": "lower",
+     "unit": "с"
+    }
+   ],
+   "variants": [
+    {
+     "id": "rutextnorm-silero",
+     "name": "rutextnorm + silero-stress",
+     "lib": "silero-stress",
+     "price": "бесплатно",
+     "needs": "CPU",
+     "test_cost": "0"
+    },
+    {
+     "id": "rutextnorm-ruaccent",
+     "name": "rutextnorm + RUAccent",
+     "lib": "ruaccent",
+     "price": "бесплатно",
+     "needs": "CPU",
+     "test_cost": "0"
+    }
+   ]
+  },
+  {
+   "id": "tts-local",
+   "group": "free",
+   "steps": [
+    "8"
+   ],
+   "title": "Синтез голоса локально",
+   "goal": "Естественность русского, ударения, клон по образцу эксперта.",
+   "input": "script_ru.txt после лучшей нормализации; образец голоса 10–20 с из записи эксперта",
+   "metrics": [
+    {
+     "id": "mos",
+     "label": "Естественность, 1–5 (вслепую)",
+     "better": "higher",
+     "unit": "балл"
+    },
+    {
+     "id": "stress_err",
+     "label": "Ошибок ударения",
+     "better": "lower",
+     "unit": "шт"
+    },
+    {
+     "id": "back_wer",
+     "label": "WER обратного распознавания",
+     "better": "lower",
+     "unit": "доля"
+    },
+    {
+     "id": "run_s",
+     "label": "Время, с",
+     "better": "lower",
+     "unit": "с"
+    }
+   ],
+   "variants": [
+    {
+     "id": "qwen3-tts",
+     "name": "Qwen3-TTS 1.7B, клон",
+     "lib": "qwen3-tts",
+     "price": "бесплатно",
+     "needs": "NVIDIA GPU",
+     "test_cost": "0"
+    },
+    {
+     "id": "qwen3-tts-stress",
+     "name": "Qwen3-TTS + LoRA ударений",
+     "lib": "qwen3-tts-ru-stress-cf",
+     "price": "бесплатно",
+     "needs": "NVIDIA GPU; лицензию данных LoRA проверить",
+     "test_cost": "0"
+    },
+    {
+     "id": "edge-tts",
+     "name": "Edge TTS (голоса Microsoft)",
+     "lib": "edge-tts",
+     "price": "бесплатно",
+     "needs": "интернет; неофициальный доступ, только как ориентир",
+     "test_cost": "0"
+    }
+   ]
+  },
+  {
+   "id": "edit",
+   "group": "free",
+   "steps": [
+    "10"
+   ],
+   "title": "Движок монтажа",
+   "goal": "Ролик 1080×1920 с субтитрами по словам на русском, шрифт с кириллицей, безопасные зоны.",
+   "input": "Очищенная запись + таймкоды слов из теста asr",
+   "metrics": [
+    {
+     "id": "cyrillic_ok",
+     "label": "Кириллица без ошибок",
+     "better": "higher",
+     "unit": "0/1"
+    },
+    {
+     "id": "captions_sync",
+     "label": "Синхрон субтитров, 1–5",
+     "better": "higher",
+     "unit": "балл"
+    },
+    {
+     "id": "safe_zone_ok",
+     "label": "Текст в безопасной зоне",
+     "better": "higher",
+     "unit": "0/1"
+    },
+    {
+     "id": "render_s",
+     "label": "Рендер, с",
+     "better": "lower",
+     "unit": "с"
+    }
+   ],
+   "variants": [
+    {
+     "id": "remotion",
+     "name": "Remotion + @remotion/captions",
+     "lib": "remotion-dev-skills",
+     "price": "бесплатно до 3 человек",
+     "needs": "Node 20+",
+     "test_cost": "0"
+    },
+    {
+     "id": "hyperframes",
+     "name": "HyperFrames",
+     "lib": "heygen-hyperframes",
+     "price": "бесплатно",
+     "needs": "Node, Chrome",
+     "test_cost": "0"
+    }
+   ]
+  },
+  {
+   "id": "text-check",
+   "group": "free",
+   "steps": [
+    "4",
+    "11"
+   ],
+   "title": "Проверщики русского текста",
+   "goal": "Сколько заложенных проблем находит каждый и сколько ложных срабатываний.",
+   "input": "post_ru.md, ключ — post_ru_key.json (16 проблем)",
+   "metrics": [
+    {
+     "id": "found",
+     "label": "Найдено из 16",
+     "better": "higher",
+     "unit": "шт"
+    },
+    {
+     "id": "false_pos",
+     "label": "Ложных срабатываний",
+     "better": "lower",
+     "unit": "шт"
+    },
+    {
+     "id": "run_s",
+     "label": "Время, с",
+     "better": "lower",
+     "unit": "с"
+    }
+   ],
+   "variants": [
+    {
+     "id": "humanizer-ru",
+     "name": "humanizer-ru",
+     "lib": "vladimir-human-humanizer-ru",
+     "price": "бесплатно",
+     "needs": "Python",
+     "test_cost": "0"
+    },
+    {
+     "id": "ru-lint",
+     "name": "ru_lint.py (ru-editor)",
+     "lib": "miolamio-ru-editor",
+     "price": "бесплатно",
+     "needs": "Python 3.11+",
+     "test_cost": "0"
+    },
+    {
+     "id": "ru-text",
+     "name": "ru-text",
+     "lib": "talkstream-ru-text",
+     "price": "бесплатно",
+     "needs": "агент со скиллами",
+     "test_cost": "0"
+    }
+   ]
+  },
+  {
+   "id": "tts-cloud",
+   "group": "paid",
+   "steps": [
+    "8"
+   ],
+   "title": "Синтез голоса в облаке",
+   "goal": "Тот же текст и образец, что в tts-local; сравнение качества и цены.",
+   "input": "Как в tts-local",
+   "metrics": [
+    {
+     "id": "mos",
+     "label": "Естественность, 1–5 (вслепую)",
+     "better": "higher",
+     "unit": "балл"
+    },
+    {
+     "id": "stress_err",
+     "label": "Ошибок ударения",
+     "better": "lower",
+     "unit": "шт"
+    },
+    {
+     "id": "back_wer",
+     "label": "WER обратного распознавания",
+     "better": "lower",
+     "unit": "доля"
+    },
+    {
+     "id": "cost_per_min",
+     "label": "Цена минуты речи",
+     "better": "lower",
+     "unit": "$"
+    }
+   ],
+   "variants": [
+    {
+     "id": "elevenlabs-v4",
+     "name": "ElevenLabs v4, готовый голос",
+     "lib": "elevenlabs-api-v4",
+     "price": "$0,08 за 1000 символов (v4), $0,04 (v4 Turbo); бесплатно 10 000 кредитов в месяц",
+     "needs": "ключ ElevenLabs",
+     "test_cost": "≈$0,08 за тест"
+    },
+    {
+     "id": "elevenlabs-clone",
+     "name": "ElevenLabs v4, клон эксперта",
+     "lib": "elevenlabs-api-v4",
+     "price": "клон голоса — с тарифа Starter $6/мес (первый месяц $1, по отчёту)",
+     "needs": "платный тариф для клона — проверить",
+     "test_cost": "$1–6 за месяц тарифа"
+    },
+    {
+     "id": "yandex-speechkit",
+     "name": "Yandex SpeechKit v3",
+     "lib": "yandex-speechkit",
+     "price": "0,1626 ₽ за запрос до 250 символов (≈0,65 ₽ за 1000)",
+     "needs": "аккаунт Yandex Cloud",
+     "test_cost": "≈1 ₽ за тест; стартовый грант Yandex Cloud — проверить"
+    }
+   ]
+  },
+  {
+   "id": "avatar",
+   "group": "paid",
+   "steps": [
+    "8"
+   ],
+   "title": "Аватар эксперта",
+   "goal": "Ролик 15 с: фото эксперта + его голос, липсинк на русском.",
+   "input": "3–5 фото эксперта, озвучка лучшего варианта tts",
+   "metrics": [
+    {
+     "id": "lipsync",
+     "label": "Липсинк, 1–5",
+     "better": "higher",
+     "unit": "балл"
+    },
+    {
+     "id": "likeness",
+     "label": "Похожесть, 1–5",
+     "better": "higher",
+     "unit": "балл"
+    },
+    {
+     "id": "cost",
+     "label": "Цена ролика",
+     "better": "lower",
+     "unit": "$"
+    },
+    {
+     "id": "run_s",
+     "label": "Время генерации, с",
+     "better": "lower",
+     "unit": "с"
+    }
+   ],
+   "variants": [
+    {
+     "id": "heygen",
+     "name": "HeyGen (MCP или скиллы)",
+     "lib": "heygen-com-skills",
+     "price": "бесплатно 3 видео в месяц до 1 мин с водяным знаком; цена минуты по API — проверить",
+     "needs": "аккаунт HeyGen",
+     "test_cost": "0 на бесплатном плане"
+    },
+    {
+     "id": "higgsfield",
+     "name": "Higgsfield",
+     "lib": "higgsfield-mcp",
+     "price": "бесплатных кредитов нет; Starter $19/мес, 270 кредитов; цена ролика в кредитах — проверить",
+     "needs": "аккаунт Higgsfield",
+     "test_cost": "от $19"
+    }
+   ]
+  },
+  {
+   "id": "clips",
+   "group": "paid",
+   "steps": [
+    "7",
+    "8"
+   ],
+   "title": "Видеоклипы и перебивки",
+   "goal": "Один промпт из раскадровки, 5 с 720p 9:16; качество, следование промпту, цена.",
+   "input": "Промпт сцены из references/tests.md",
+   "metrics": [
+    {
+     "id": "prompt_fit",
+     "label": "Следование промпту, 1–5",
+     "better": "higher",
+     "unit": "балл"
+    },
+    {
+     "id": "quality",
+     "label": "Качество, 1–5",
+     "better": "higher",
+     "unit": "балл"
+    },
+    {
+     "id": "cost",
+     "label": "Цена клипа",
+     "better": "lower",
+     "unit": "$"
+    },
+    {
+     "id": "run_s",
+     "label": "Время генерации, с",
+     "better": "lower",
+     "unit": "с"
+    }
+   ],
+   "variants": [
+    {
+     "id": "kling",
+     "name": "Kling (через fal)",
+     "lib": "kling-4",
+     "price": "Kling 4.0: ≈$0,785 за 5 с 720p (страница модели fal, перепроверить); Kling v3 Pro $0,14/с",
+     "needs": "ключ fal",
+     "test_cost": "≈$0,8"
+    },
+    {
+     "id": "wan",
+     "name": "Wan (через fal)",
+     "lib": "wan-3",
+     "price": "Wan 3.0: ≈$0,50 за 5 с 720p (страница модели fal, перепроверить)",
+     "needs": "ключ fal",
+     "test_cost": "≈$0,5"
+    },
+    {
+     "id": "minimax",
+     "name": "MiniMax (через fal)",
+     "lib": "minimax-h3",
+     "price": "MiniMax H3 Max Turbo $0,015/с, Max $0,03/с (fal, общая страница цен)",
+     "needs": "ключ fal",
+     "test_cost": "≈$0,08–0,15"
+    },
+    {
+     "id": "seedance-mini",
+     "name": "Seedance 2.0 (через fal)",
+     "lib": "seedance-2-0",
+     "price": "Seedance 2.0 — $0,014 за 1000 токенов; 5 с fast ≈$1,21 (расчёт по отчёту); Mini на fal не найден",
+     "needs": "ключ fal",
+     "test_cost": "≈$1,2"
+    }
+   ]
+  },
+  {
+   "id": "asr-cloud",
+   "group": "paid",
+   "steps": [
+    "10"
+   ],
+   "title": "Распознавание в облаке",
+   "goal": "Сравнить с бесплатным asr: стоит ли платить.",
+   "input": "Как в asr",
+   "metrics": [
+    {
+     "id": "wer",
+     "label": "WER",
+     "better": "lower",
+     "unit": "доля"
+    },
+    {
+     "id": "word_timestamps",
+     "label": "Таймкоды слов",
+     "better": "higher",
+     "unit": "0/1"
+    },
+    {
+     "id": "cost_per_min",
+     "label": "Цена минуты",
+     "better": "lower",
+     "unit": "$"
+    }
+   ],
+   "variants": [
+    {
+     "id": "elevenlabs-scribe",
+     "name": "ElevenLabs Scribe",
+     "lib": "elevenlabs-skills",
+     "price": "Scribe $0,20 за час",
+     "needs": "ключ ElevenLabs",
+     "test_cost": "≈$0,01 за тест"
+    },
+    {
+     "id": "yandex-stt",
+     "name": "Yandex SpeechKit распознавание",
+     "lib": "yandex-speechkit",
+     "price": "0,1626 ₽ за 15 с",
+     "needs": "аккаунт Yandex Cloud",
+     "test_cost": "≈1,3 ₽ за 2 мин"
+    }
+   ]
+  }
+ ],
+ "services": [
+  {
+   "name": "ElevenLabs",
+   "free": "10 000 кредитов в месяц (≈10 000 символов v4 — проверить соотношение)",
+   "paid": "Starter $6/мес (первый месяц $1) — клон голоса; API: $0,08 / 1000 симв. v4, Scribe $0,20/ч",
+   "ru_pay": "не найдено, из РФ через посредников",
+   "src": "https://elevenlabs.io/pricing/api"
+  },
+  {
+   "name": "Yandex SpeechKit",
+   "free": "стартовый грант Yandex Cloud от 4000 ₽ — распространяется ли на SpeechKit, проверить",
+   "paid": "синтез 0,1626 ₽ / 250 симв., распознавание 0,1626 ₽ / 15 с",
+   "ru_pay": "рубли",
+   "src": "https://aistudio.yandex.ru/ru/docs/speechkit/pricing"
+  },
+  {
+   "name": "fal.ai",
+   "free": "бесплатных кредитов не найдено; MCP бесплатен",
+   "paid": "оплата за запуск: Kling 4.0 ≈$0,785 / 5 с, Wan 3.0 ≈$0,50 / 5 с, MiniMax H3 Turbo $0,015/с",
+   "ru_pay": "не найдено",
+   "src": "https://fal.ai/pricing"
+  },
+  {
+   "name": "HeyGen",
+   "free": "3 видео в месяц, до 1 мин, водяной знак",
+   "paid": "цена минуты через API не найдена — проверить в браузере",
+   "ru_pay": "не найдено",
+   "src": "https://www.heygen.com/pricing"
+  },
+  {
+   "name": "Higgsfield",
+   "free": "0 кредитов",
+   "paid": "Starter $19/мес, 270 кредитов",
+   "ru_pay": "не найдено",
+   "src": "https://higgsfield.ai/pricing"
+  },
+  {
+   "name": "Postmypost",
+   "free": "7 дней пробно",
+   "paid": "цены не прочитались со страницы — проверить в браузере; Reels и Shorts не упомянуты",
+   "ru_pay": "рубли",
+   "src": "https://postmypost.io"
+  },
+  {
+   "name": "Remotion",
+   "free": "до 3 человек",
+   "paid": "Creators $25 за место/мес; Automators $0,01 за рендер, минимум $100/мес",
+   "ru_pay": "не найдено",
+   "src": "https://www.remotion.dev/docs/license/faq"
+  },
+  {
+   "name": "HyperFrames",
+   "free": "фреймворк Apache-2.0",
+   "paid": "приложение Studio Pro $25/мес (не нужно для теста)",
+   "ru_pay": "не найдено",
+   "src": "https://github.com/heygen-com/hyperframes"
+  }
+ ],
+ "prices_checked": "27.11.2026: ElevenLabs и общая страница fal — по первоисточнику; остальное — отчёт субагента по страницам, перед оплатой проверить."
+}

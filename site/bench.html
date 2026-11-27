@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Стенд этапа 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE work: a test sheet the team fills in, scanned for "what is free, what costs, what is done"
+   IDEA a lab test board: every variant is a cell on the board, coloured by its verdict
+   PICTURE the board across the green first screen, tests as rows, variants as cells
+   COLOUR plan's deep green #00463c ground, lime #e6f5c8 for paid, coral #ff6f59 for "не годится"
+   TYPE Inter Tight 700 + Inter, same as the plan page
+   LAYOUT title and board on top; filter; one card per test with a variant table; services; how to join */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0c1715);--ink:light-dark(#10201c,#e6efe9);--mute:light-dark(#4b5d58,#9fb3ac);--rule:light-dark(#d9e3df,#22332f);--soft:light-dark(#f2f7f4,#13221f);--green:#00463c;--lime:#e6f5c8;--coral:#ff6f59}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Inter Tight",Inter,sans-serif;letter-spacing:-.02em;line-height:1.1;margin:0}
+a{color:inherit}
+.band{padding:clamp(28px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+.top{background:var(--green);color:#eef7f0}
+.top h1{font-size:clamp(32px,4.6vw,50px);color:#fff;text-wrap:balance;max-width:16em}
+.lead{font-size:17px;max-width:64ch;margin:14px 0 0;color:#d7eadf}
+.back{display:inline-block;margin-bottom:14px;color:#cfe3d8;font-size:14px}
+.board{margin-top:26px;display:grid;gap:6px}
+.brow{display:grid;grid-template-columns:minmax(9em,14em) 1fr;gap:10px;align-items:center}
+.brow .t{font-size:14px;color:#d7eadf}.brow .t b{color:#fff;font-weight:600}
+.cells{display:flex;flex-wrap:wrap;gap:6px}
+.cell{font-size:13px;padding:6px 10px;border-radius:8px;border:1.5px dashed rgba(255,255,255,.45);color:#eef7f0;text-decoration:none;white-space:nowrap}
+.cell.ok{background:#fff;color:#0b3a31;border:1.5px solid #fff}
+.cell.partial{background:var(--lime);color:#18321c;border:1.5px solid var(--lime)}
+.cell.no,.cell.fail{background:var(--coral);color:#2a0d07;border:1.5px solid var(--coral)}
+.cell.paid{border-color:var(--lime);color:var(--lime)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px;font-size:13px;color:#cfe3d8}
+.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:16px;height:12px;border-radius:3px;display:inline-block}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(9em,1fr));margin-top:26px;border-top:1px solid rgba(255,255,255,.25)}
+.figs div{padding:14px 16px 4px 0}.figs b{display:block;font:700 clamp(24px,3vw,34px)/1.1 "Inter Tight",sans-serif;color:#fff;white-space:nowrap}.figs span{font-size:14px;color:#cfe3d8}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--rule)}
+nav .scroll{display:flex;gap:4px;max-width:1240px;margin:0 auto;padding:8px max(5vw,16px);overflow-x:auto}
+nav a,.filters button{flex:none;color:var(--ink);text-decoration:none;padding:10px 12px;border-radius:8px;font:500 15px Inter,sans-serif;background:none;border:0;cursor:pointer;min-height:44px}
+nav a:hover,nav a:focus-visible,.filters button:hover,.filters button:focus-visible{background:var(--soft);outline:none}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px}
+.filters button{border:1px solid var(--rule)}.filters button[aria-pressed=true]{background:var(--green);color:#fff;border-color:var(--green)}
+h2{font-size:clamp(26px,3vw,34px);margin-bottom:6px}
+.sub{color:var(--mute);margin:0 0 22px;max-width:70ch}
+.test{border-top:2px solid var(--ink);padding:22px 0 30px}
+.test.paid{border-top-color:#9cc46b}
+.thead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 20px;align-items:baseline}
+.thead h3{font-size:24px}
+.tag{display:inline-block;font-size:13px;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.t-free{background:var(--green);color:#fff}.t-paid{background:var(--lime);color:#18321c}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(16em,1fr));gap:4px 28px;margin:10px 0 16px;color:var(--mute);font-size:15px}
+.meta b{color:var(--ink);font-weight:600}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-size:13px;color:var(--mute);font-weight:600}
+td.num{white-space:nowrap}
+.vd{display:inline-block;font-size:13px;padding:2px 8px;border-radius:6px;white-space:nowrap;margin-bottom:4px}
+.v-ok{background:var(--green);color:#fff}.v-partial{background:var(--lime);color:#18321c}.v-no,.v-fail{background:var(--coral);color:#2a0d07}.v-none{border:1.5px dashed var(--mute);color:var(--mute)}
+.small{font-size:13px;color:var(--mute)}
+.mlist{margin:0;padding:0;list-style:none}.mlist li{white-space:nowrap}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:12px;max-width:80ch}
+.steps li{counter-increment:s;padding-left:2.4em;position:relative}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:1.7em;height:1.7em;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:600;font-size:14px}
+code{font-size:14px;background:var(--soft);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+.scroll{overflow-x:auto}
+footer{color:var(--mute);font-size:14px;border-top:1px solid var(--rule)}
+@media(max-width:600px){.brow{grid-template-columns:minmax(0,1fr);gap:4px}.thead{grid-template-columns:minmax(0,1fr)}table{font-size:13px}th,td{padding:6px 4px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--rule)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;color:var(--mute);font-size:12px}.stack td:empty{display:none}}
+</style>
+</head>
+<body>
+<header class="top band"><div class="wrap">
+  <a class="back" href="https://claude.ai/artifact/6VNrHvwcXVbcU2gBeUGq7B">← План конвейера</a>
+  <h1>Стенд этапа 3: что тестируем и сколько стоит</h1>
+  <p class="lead">Один материал, несколько вариантов на каждую задачу. Бесплатное тестируем сейчас, платное — потом, после «да» с суммой. Каждая клетка — вариант. Цвет показывает вердикт тестировщиков.</p>
+  <div class="board" id="board" aria-label="Доска тестов: строки — тесты, клетки — варианты"></div>
+  <div class="legend"><span><i style="border:1.5px dashed #cfe3d8"></i>ещё не тестировали</span><span><i style="border:1.5px dashed var(--lime)"></i>платно, ждёт</span><span><i style="background:#fff"></i>годится</span><span><i style="background:var(--lime)"></i>с оговорками</span><span><i style="background:var(--coral)"></i>не годится или не запустилось</span></div>
+  <div class="figs" id="figs"></div>
+</div></header>
+
+<nav aria-label="Разделы"><div class="scroll"><a href="#tests">Тесты</a><a href="#services">Сервисы и цены</a><a href="#join">Как подключиться</a><a href="https://claude.ai/artifact/6VNrHvwcXVbcU2gBeUGq7B">План</a></div></nav>
+
+<section class="band" id="tests"><div class="wrap">
+  <h2>Тесты и варианты</h2>
+  <p class="sub">Цена — тариф сервиса; «стоимость теста» — сколько уйдёт на один прогон на нашем материале. Результаты — среднее по всем тестировщикам. Данные — data/bench.json и data/bench_results.json.</p>
+  <div class="filters" role="group" aria-label="Фильтр">
+    <button type="button" data-f="all" aria-pressed="true">Все</button>
+    <button type="button" data-f="free" aria-pressed="false">Бесплатно — сейчас</button>
+    <button type="button" data-f="paid" aria-pressed="false">Платно — с коллегой</button>
+    <button type="button" data-f="todo" aria-pressed="false">Ещё без результатов</button>
+  </div>
+  <div id="list"></div>
+</div></section>
+
+<section class="band" id="services" style="background:var(--soft)"><div class="wrap">
+  <h2>Сервисы: бесплатный лимит и цены</h2>
+  <p class="sub" id="pchk"></p>
+  <div class="scroll"><table class="stack" id="svc"><thead><tr><th>Сервис</th><th>Бесплатно</th><th>Платно</th><th>Оплата из РФ</th><th>Источник</th></tr></thead><tbody></tbody></table></div>
+</div></section>
+
+<section class="band" id="join"><div class="wrap">
+  <h2>Как подключиться тестировщику</h2>
+  <p class="sub">Нужны Python 3.10+, Node 22+, ffmpeg и git. Видеокарта NVIDIA — только для Qwen3-TTS.</p>
+  <ol class="steps">
+    <li>Склонировать репозиторий: <code>git clone https://github.com/nikita98/content-pipeline</code></li>
+    <li>Поставить скилл стенда в папки агентов: <code>python tools/install_skills.py kp-bench</code></li>
+    <li>Открыть агента (Claude Code, Codex, Kimi Code, OpenCode) в папке репозитория и написать: «запусти тесты стека, я &lt;имя латиницей&gt;». Скилл проверит компьютер и предложит, с чего начать.</li>
+    <li>Для тестов голоса и монтажа прочитать вслух <code>skills/kp-bench/assets/inputs/script_ru.txt</code> на телефон (45–60 с) и записать 15 с свободной речи для клона.</li>
+    <li>После прогона скилл запишет результат в <code>bench/results/</code>. Затем <code>git pull --rebase</code> и <code>git push</code> — клетка на этой странице окрасится после следующей публикации.</li>
+    <li>Платные тесты — только после «да» с суммой от того, кто платит. Ключи API — в своё окружение, не в чат и не в репозиторий.</li>
+  </ol>
+</div></section>
+
+<footer class="band"><div class="wrap">Скилл: skills/kp-bench/SKILL.md · порядок тестов: skills/kp-bench/references/tests.md · установка: references/install.md</div></footer>
+
+<script>
+{
+const e=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const VD={ok:["годится","v-ok"],partial:["с оговорками","v-partial"],no:["не годится","v-no"],fail:["не запустилось","v-fail"]};
+const fmt=(m,v)=>{if(typeof v!=="number")return e(v);if(m.unit==="доля")return (v*100).toFixed(1).replace(".",",")+" %";return String(Math.round(v*100)/100).replace(".",",")+(m.unit&&m.unit!=="балл"&&m.unit!=="0/1"&&m.unit!=="шт"?" "+e(m.unit):"")};
+const get=f=>fetch("data/"+f+".json").then(r=>{if(!r.ok)throw new Error(f);return r.json()});
+Promise.all([get("bench"),get("bench_results").catch(()=>({results:[]}))]).then(([B,R])=>{
+  const res=Object.fromEntries((R.results||[]).map(r=>[r.test+"|"+r.variant,r]));
+  const top=r=>{if(!r)return null;const v=r.verdicts||{};return Object.keys(v).sort((a,b)=>v[b]-v[a])[0]};
+  const runs=(R.results||[]).reduce((s,r)=>s+r.runs,0);
+  const testers=new Set((R.results||[]).flatMap(r=>r.testers));
+  const T=B.tests;const nv=T.reduce((s,t)=>s+t.variants.length,0);const done=T.reduce((s,t)=>s+t.variants.filter(v=>res[t.id+"|"+v.id]).length,0);
+  document.getElementById("board").innerHTML=T.map(t=>`<div class="brow"><div class="t"><b>${e(t.title)}</b> · ${t.group==="free"?"бесплатно":"платно"}</div><div class="cells">${t.variants.map(v=>{const k=top(res[t.id+"|"+v.id]);return `<a class="cell ${k||(t.group==="paid"?"paid":"")}" href="#t-${e(t.id)}">${e(v.name)}</a>`}).join("")}</div></div>`).join("");
+  document.getElementById("figs").innerHTML=[[T.filter(t=>t.group==="free").length+" бесплатных","тестов сейчас"],[T.filter(t=>t.group==="paid").length+" платных","тестов потом"],[done+" из "+nv,"вариантов с результатом"],[runs+" прогонов",testers.size?"тестировщики: "+[...testers].join(", "):"пока никто не начинал"]].map(([b,s])=>`<div><b>${e(b)}</b><span>${e(s)}</span></div>`).join("");
+  const H=["Вариант","Цена","Стоимость теста","Что нужно","Результат"];
+  document.getElementById("list").innerHTML=T.map(t=>{
+    const any=t.variants.some(v=>res[t.id+"|"+v.id]);
+    const rows=t.variants.map(v=>{const r=res[t.id+"|"+v.id];let out='<span class="vd v-none">не тестировали</span>';
+      if(r){const k=top(r);out=`<span class="vd ${VD[k]?.[1]||"v-none"}">${e(VD[k]?.[0]||k)}</span> <span class="small">${r.runs} прог. · ${e(r.testers.join(", "))}</span><ul class="mlist">${t.metrics.filter(m=>r.metrics[m.id]!==undefined).map(m=>`<li>${e(m.label)}: <b>${fmt(m,r.metrics[m.id])}</b></li>`).join("")}${r.setup_min!=null?`<li>Установка: ${e(r.setup_min)} мин</li>`:""}${Object.entries(r.cost||{}).map(([c,a])=>`<li>Потрачено: ${e(a)} ${e(c)}</li>`).join("")}</ul>${r.notes.map(n=>`<div class="small">${e(n)}</div>`).join("")}`}
+      const c=[`<b>${e(v.name)}</b>`,e(v.price),e(v.test_cost||"—"),e(v.needs),out];
+      return `<tr>${c.map((x,i)=>`<td data-l="${H[i]}"${i===2?' class="num"':""}>${x}</td>`).join("")}</tr>`}).join("");
+    return `<article class="test ${t.group}" id="t-${e(t.id)}" data-g="${t.group}" data-todo="${any?0:1}">
+      <div class="thead"><h3>${e(t.title)}</h3><span class="tag ${t.group==="free"?"t-free":"t-paid"}">${t.group==="free"?"Бесплатно, сейчас":"Платно, после «да»"}</span></div>
+      <div class="meta"><div><b>Зачем:</b> ${e(t.goal)}</div><div><b>Материал:</b> ${e(t.input)}</div><div><b>Метрики:</b> ${t.metrics.map(m=>e(m.label)).join(", ")}</div><div><b>Шаги конвейера:</b> ${e(t.steps.join(", "))} · <code>${e(t.id)}</code></div></div>
+      <div class="scroll"><table class="stack"><thead><tr>${H.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div></article>`}).join("");
+  document.getElementById("pchk").textContent="Цены: "+(B.prices_checked||"")+" Перед оплатой открыть страницу цен сервиса.";
+  const SH=["Сервис","Бесплатно","Платно","Оплата из РФ","Источник"];
+  document.querySelector("#svc tbody").innerHTML=(B.services||[]).map(s=>`<tr>${[`<b>${e(s.name)}</b>`,e(s.free),e(s.paid),e(s.ru_pay),`<a href="${e(s.src)}" target="_blank" rel="noopener">${e(s.src.replace(/^https?:\/\/(www\.)?/,"").split("/")[0])}</a>`].map((x,i)=>`<td data-l="${SH[i]}">${x}</td>`).join("")}</tr>`).join("");
+  const bs=[...document.querySelectorAll(".filters button")];
+  bs.forEach(b=>b.addEventListener("click",()=>{const f=b.dataset.f;bs.forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+    document.querySelectorAll(".test").forEach(el=>{el.hidden=f==="all"?false:f==="todo"?el.dataset.todo!=="1":el.dataset.g!==f})}));
+}).catch(err=>{document.getElementById("list").textContent="Не удалось загрузить данные: "+err.message});
+}
+</script>
+</body>
+</html>
