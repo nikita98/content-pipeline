@@ -71,13 +71,11 @@ $menu = Join-Path ([Environment]::GetFolderPath("Programs")) "Конвейер �
 Ok (Test-Path $desk) "ярлык на рабочем столе"
 Ok (Test-Path $menu) "ярлык в меню «Пуск»"
 if (Test-Path $desk) {
-  # строки в .lnk хранятся в UTF-16: ищем путь к pythonw.exe и server.py в самом файле
-  # (путь цели в LinkInfo может быть в однобайтовой кодировке, аргументы и рабочая папка — в UTF-16)
+  # .lnk хранит путь цели в LinkInfo/IDList, кодировка зависит от пути — проверяем запуском (ниже) и печатаем строки
   $bytes = [System.IO.File]::ReadAllBytes($desk)
-  $lnkText = [System.Text.Encoding]::Unicode.GetString($bytes) + [System.Text.Encoding]::Latin1.GetString($bytes)
-  Ok ($lnkText.Contains("tools\python\pythonw.exe")) "ярлык запускает встроенный pythonw.exe"
-  Ok ($lnkText.Contains($Dir)) "ярлык указывает в папку установки"
-  Ok ($lnkText.Contains("app\server.py")) "ярлык открывает app\server.py"
+  $u = [System.Text.Encoding]::Unicode.GetString($bytes) -replace "[^\u0020-\u04FF]", " " -replace "\s{2,}", " | "
+  Write-Host "  строки ярлыка: $u"
+  Ok ([System.Text.Encoding]::Latin1.GetString($bytes).Contains("pythonw.exe") -or $u.Contains("pythonw.exe")) "ярлык указывает на pythonw.exe"
 }
 EndGroup
 
@@ -223,6 +221,25 @@ if ($lock) {
 $sl = Join-Path $Dir "data\logs\server.log"
 Ok (Test-Path $sl) "pythonw: вывод сервера в data\logs\server.log"
 if (Test-Path $sl) { Get-Content $sl -Encoding UTF8 | Select-Object -Last 10 | ForEach-Object { Write-Host "  | $_" } }
+EndGroup
+
+Group "Запуск ярлыком с рабочего стола (как у пользователя)"
+if (Test-Path $desk) {
+  Start-Process -FilePath $desk
+  $lock = Wait-Lock 40
+  Ok ($null -ne $lock) "ярлык запустил сервер (lock-файл появился)"
+  if ($lock) {
+    $r = Invoke-WebRequest "http://127.0.0.1:$($lock.port)/" -UseBasicParsing
+    Ok ($r.StatusCode -eq 200) "ярлык: интерфейс отвечает, GET / → 200"
+    $sp = Get-Process -Id $lock.pid -ErrorAction SilentlyContinue
+    Ok ($sp -and $sp.ProcessName -eq "pythonw") "ярлык: сервер работает под pythonw.exe (без окна консоли)"
+    Start-Sleep -Seconds 3
+    Shot "shortcut-$tag-browser"
+    Set-Content -Path (Join-Path $Dir "data\stop.request") -Value "stop"
+    Ok (Wait-NoLock 20) "ярлык: сервер остановлен через data\stop.request"
+  }
+  Get-Process msedge, chrome -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+}
 EndGroup
 
 # ---------- 6. удаление ----------

@@ -109,6 +109,17 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      - name: Снимки экрана в лог (base64, для просмотра без скачивания artifact)
+        if: always()
+        shell: pwsh
+        run: |
+          Get-ChildItem "${{ runner.temp }}/shots/*.png" -ErrorAction SilentlyContinue | ForEach-Object {
+            $b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($_.FullName))
+            Write-Host "SHOT-BEGIN $($_.Name) $($b64.Length)"
+            for ($i = 0; $i -lt $b64.Length; $i += 4000) { Write-Host ("SHOT " + $b64.Substring($i, [Math]::Min(4000, $b64.Length - $i))) }
+            Write-Host "SHOT-END $($_.Name)"
+          }
+
       - name: Логи при сбое
         if: failure()
         shell: pwsh
