@@ -3,11 +3,14 @@
 Страница в браузере на компьютере пользователя. Сервер — `app/server.py`, только стандартная библиотека Python 3.10+, слушает только `127.0.0.1`. Первый раздел — «Тесты» (стенд этапа 3, `skills/kp-bench`), остальные шаги конвейера из `site/data/steps.json` видны в меню как «скоро».
 
 ## Запуск
-- Windows: двойной клик по `start.bat` в корне репозитория (`start-bench.bat` — сразу «Тесты»). Если Python нет, окно подскажет `winget install Python.Python.3.12`.
+- Windows без консоли: установщик `ContentPipeline-Setup-<версия>.exe` (Releases), ярлык «Конвейер контента» → `tools\python\pythonw.exe app\server.py`. Устройство и сборка — `installer/README.md`.
+- Windows из git-клона: двойной клик по `start.bat` в корне репозитория (`start-bench.bat` — сразу «Тесты»). Если Python нет, окно подскажет `winget install Python.Python.3.12`.
 - macOS: `start.command` (`start-bench.command`). Первый раз: правый клик → «Открыть» или в Терминале `chmod +x start.command start-bench.command`.
 - Вручную: `python app/server.py [--section bench] [--no-browser] [--port 8765]`. Порт занят — берётся следующий свободный.
 
 Окно с сервером не закрывать, пока идёт работа. Пути с пробелами и кириллицей поддерживаются.
+
+Один сервер на папку: `data/server.lock` (порт, токен, instance). Повторный запуск открывает браузер на работающий сервер. Остановка — кнопка «Выход», Ctrl+C, файл `data/stop.request` (его пишет деинсталлятор) или автоматически: браузер 10 минут не присылал запросов (страница шлёт heartbeat раз в минуту) и нет идущей задачи; `--idle-minutes 0` отключает.
 
 ## Устройство
 ```
@@ -20,6 +23,8 @@ app/core/tools.py       внешние программы (поиск, кома�
 app/core/agents.py      ИИ-агенты в фоне: Claude Code, Codex, OpenCode, Kimi Code
 app/core/gitops.py      проверка git, отправка (add → commit → pull --rebase → push), zip
 app/core/settings.py    app/settings.local.json (в git не идёт): тестировщик, агент
+app/core/bundled.py     встроенные программы установленной копии (tools/), PATH, HF_HOME, TORCH_HOME, кэш pip в data/
+app/setup/components.*  компоненты (пакеты Python): список для установщика и раздела «Установка», исполнитель с окном tkinter
 app/modules/<id>.py     модуль раздела: register(app)
 app/web/index.html      оболочка; core.js — API, навигация, компоненты; core.css — стили
 app/web/modules/<id>.js интерфейс раздела
@@ -33,7 +38,7 @@ app/web/modules/<id>.js интерфейс раздела
 - одна тяжёлая задача за раз, вторая получает отказ с текстом;
 - логи задач — `bench/runs/_log/<дата-время>_<действие>.txt`.
 
-Внешние программы (Python, Node, ffmpeg, git, auto-editor) интерфейс не ставит: показывает команду winget или brew с кнопкой «Скопировать». Пакеты Python ставятся кнопкой в окружения `.venv-asr`, `.venv-whisperx`, `.venv-tts` в корне репозитория (в git не идут).
+Внешние программы (Python, Node, ffmpeg, git, auto-editor) интерфейс не ставит: показывает команду winget или brew с кнопкой «Скопировать». В установленной копии они встроены в `tools/` и находятся первыми. Пакеты Python ставятся кнопкой в окружения `.venv-asr`, `.venv-whisperx`, `.venv-tts` в корне репозитория (в git не идут); в установленной копии — `data/venv/asr|whisperx|tts`. Раздел «Установка» доставляет компоненты из `app/setup/components.json` (`POST /api/run`, действие `setup.install`).
 
 ## Агенты
 Выбор — «Настройки». Длинная задача пишется в `bench/runs/_agent/<время>_<имя>.md`, агенту уходит короткий промпт со ссылкой на файл. Команды — `app/core/agents.py`, там же источники. Флаги OpenCode для прав не подтверждены — проверить. Если агента нет, интерфейс показывает текст задачи с кнопкой «Скопировать».

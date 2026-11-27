@@ -6,14 +6,20 @@
    "name": "Python 3.12 (python-build-standalone)",
    "version": "3.12.16+20261124",
    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261124/cpython-3.12.16%2B20261124-x86_64-pc-windows-msvc-install_only.tar.gz",
-   "sha256": "",
+   "sha256": "8152ff5b6c6c044ddbbaa3531dda59cb9ce5bd6cb670d4c9ac2e3ab91afa8778",
    "sums_url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261124/SHA256SUMS",
    "type": "tar.gz",
    "strip": 1,
    "dest": "python",
-   "remove": ["Lib/test", "Lib/idlelib/idle_test"],
+   "remove": [
+    "Lib/test",
+    "Lib/idlelib/idle_test"
+   ],
    "license": "PSF-2.0 (Python); сборка python-build-standalone — MPL-2.0 для скриптов сборки; OpenSSL Apache-2.0; Tcl/Tk — BSD-подобная",
-   "license_globs": ["LICENSE*", "licenses/*"],
+   "license_globs": [
+    "LICENSE*",
+    "licenses/*"
+   ],
    "source": "https://github.com/astral-sh/python-build-standalone"
   },
   {
@@ -21,13 +27,20 @@
    "name": "FFmpeg 9.1 essentials (сборка gyan.dev)",
    "version": "9.1",
    "url": "https://github.com/GyanD/codexffmpeg/releases/download/9.1/ffmpeg-9.1-essentials_build.zip",
-   "sha256": "",
+   "sha256": "b9bbbb3acece000cbeec994f856649354e52c773807841e78908374b24d658fd",
    "type": "zip",
    "strip": 1,
    "dest": "ffmpeg",
-   "remove": ["bin/ffplay.exe", "doc", "presets"],
+   "remove": [
+    "bin/ffplay.exe",
+    "doc",
+    "presets"
+   ],
    "license": "GPL-3.0-or-later (сборка с --enable-gpl --enable-version3)",
-   "license_globs": ["LICENSE*", "README.txt"],
+   "license_globs": [
+    "LICENSE*",
+    "README.txt"
+   ],
    "source": "https://ffmpeg.org/download.html#get-sources ; конфигурация сборки — https://www.gyan.dev/ffmpeg/builds/"
   },
   {
@@ -35,14 +48,16 @@
    "name": "Node.js 24 LTS",
    "version": "24.22.3",
    "url": "https://nodejs.org/dist/v24.22.3/node-v24.22.3-win-x64.zip",
-   "sha256": "",
+   "sha256": "e612af99f626ab415ea225af6bce5c971feb448cb5cae250bb1c3fa50c5f7d9f",
    "sums_url": "https://nodejs.org/dist/v24.22.3/SHASUMS256.txt",
    "type": "zip",
    "strip": 1,
    "dest": "node",
    "remove": [],
    "license": "MIT (Node.js), зависимости — см. LICENSE",
-   "license_globs": ["LICENSE"],
+   "license_globs": [
+    "LICENSE"
+   ],
    "source": "https://github.com/nodejs/node"
   },
   {
@@ -50,13 +65,17 @@
    "name": "MinGit 2.56.1 64-bit (Git for Windows)",
    "version": "2.56.1",
    "url": "https://github.com/git-for-windows/git/releases/download/v2.56.1.windows.1/MinGit-2.56.1-64-bit.zip",
-   "sha256": "",
+   "sha256": "4a92850b6e917da4fd010669b614b55dccf5b0ec333a534cc4be4700dfefdafd",
    "type": "zip",
    "strip": 0,
    "dest": "mingit",
    "remove": [],
    "license": "GPL-2.0 (Git), компоненты MSYS2/MinGW — свои лицензии",
-   "license_globs": ["LICENSE*", "*/LICENSE*", "mingw64/share/doc/git-doc/*COPYING*"],
+   "license_globs": [
+    "LICENSE*",
+    "*/LICENSE*",
+    "mingw64/share/doc/git-doc/*COPYING*"
+   ],
    "source": "https://github.com/git-for-windows/git"
   },
   {
@@ -64,12 +83,14 @@
    "name": "auto-editor 31.10.0",
    "version": "31.10.0",
    "url": "https://github.com/WyattBlue/auto-editor/releases/download/31.10.0/auto-editor-windows-x86_64.exe",
-   "sha256": "",
+   "sha256": "a6e1a2f8d046055630c5c9d79558391a8aeceda3e2646a1fec8dc00886adc520",
    "type": "file",
    "dest": "auto-editor",
    "filename": "auto-editor.exe",
    "license": "Unlicense (общественное достояние)",
-   "license_files": ["installer/licenses/auto-editor-LICENSE.txt"],
+   "license_files": [
+    "installer/licenses/auto-editor-LICENSE.txt"
+   ],
    "source": "https://github.com/WyattBlue/auto-editor"
   }
  ]

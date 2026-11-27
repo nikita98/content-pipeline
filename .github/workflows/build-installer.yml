@@ -27,9 +27,9 @@ jobs:
     outputs:
       version: ${{ steps.ver.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -73,7 +73,7 @@ jobs:
         shell: pwsh
         env:
           PYTHONUTF8: "1"
-        run: python installer/build.py --version ${{ steps.ver.outputs.version }} --iscc "${{ steps.inno.outputs.iscc }}" --allow-unpinned
+        run: python installer/build.py --version ${{ steps.ver.outputs.version }} --iscc "${{ steps.inno.outputs.iscc }}"
 
       - name: Размер
         shell: pwsh
@@ -110,8 +110,8 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Объёмы компонентов

@@ -105,7 +105,8 @@ footer{color:var(--mute);font-size:14px;border-top:1px solid var(--rule)}
 
 <section class="band" id="join"><div class="wrap">
   <h2>Как подключиться тестировщику</h2>
-  <p class="sub">Нужны Python 3.10+, Node 22+, ffmpeg и git. Видеокарта NVIDIA — только для Qwen3-TTS.</p>
+  <p class="sub"><b>Без консоли (Windows 10/11):</b> скачать установщик <code>ContentPipeline-Setup-…exe</code> со страницы <a href="https://github.com/nikita98/content-pipeline/releases/latest">Releases</a> и запустить. «Далее» → папка (лучше латиницей) → галочки компонентов → «Готово». Права администратора не нужны, Python, ffmpeg, Git, Node и auto-editor уже внутри. Интерфейс открывается ярлыком «Конвейер контента» на рабочем столе, закрывается кнопкой «Выход». Файл пока без подписи: если Windows покажет «Система Windows защитила ваш компьютер» — «Подробнее» → «Выполнить в любом случае». Результаты — «Скачать результаты архивом» и переслать владельцу.</p>
+  <p class="sub"><b>Тестировщикам с git</b> (Windows и macOS): нужны Python 3.10+, Node 22+, ffmpeg и git. Видеокарта NVIDIA — только для Qwen3-TTS.</p>
   <ol class="steps">
     <li>Склонировать репозиторий: <code>git clone https://github.com/nikita98/content-pipeline</code></li>
     <li>Запустить интерфейс двойным кликом: <code>start-bench.bat</code> (Windows) или <code>start-bench.command</code> (macOS, первый раз — правый клик → «Открыть»). Откроется страница в браузере; окно с сервером не закрывать. В «Настройках» указать имя латиницей и агента. Интерфейс проверит компьютер, поставит пакеты Python, запустит тесты и запишет результаты.</li>

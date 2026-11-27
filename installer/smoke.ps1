@@ -55,10 +55,10 @@ $menu = Join-Path ([Environment]::GetFolderPath("Programs")) "Конвейер �
 Ok (Test-Path $desk) "ярлык на рабочем столе"
 Ok (Test-Path $menu) "ярлык в меню «Пуск»"
 if (Test-Path $desk) {
-  $lnk = (New-Object -ComObject WScript.Shell).CreateShortcut($desk)
-  Write-Host "  ярлык: $($lnk.TargetPath) $($lnk.Arguments)"
-  Ok ($lnk.TargetPath -like "*\tools\python\pythonw.exe") "ярлык запускает встроенный pythonw.exe"
-  Ok ($lnk.Arguments -like "*app\server.py*") "ярлык открывает app\server.py"
+  # строки в .lnk хранятся в UTF-16: ищем путь к pythonw.exe и server.py в самом файле
+  $lnkText = [System.Text.Encoding]::Unicode.GetString([System.IO.File]::ReadAllBytes($desk))
+  Ok ($lnkText.Contains((Join-Path $Dir "tools\python\pythonw.exe"))) "ярлык запускает встроенный pythonw.exe"
+  Ok ($lnkText.Contains("app\server.py")) "ярлык открывает app\server.py"
 }
 EndGroup
 
@@ -85,8 +85,11 @@ EndGroup
 
 # ---------- 3. компоненты ----------
 Group "Компоненты (повторный запуск: ожидается «уже было»)"
-if (Test-Path (Join-Path $Dir "data\logs\components.log")) {
-  Get-Content (Join-Path $Dir "data\logs\components.log") -Encoding UTF8 | Select-Object -Last 40 | ForEach-Object { Write-Host "  | $_" }
+$clog = Join-Path $Dir "data\logs\components.log"
+if (Test-Path $clog) {
+  $cl = Get-Content $clog -Encoding UTF8
+  $cl | Where-Object { $_ -match "^\[|^  \S|Скачиваю|%$" } | Select-Object -First 80 | ForEach-Object { Write-Host "  | $_" }
+  Write-Host ("  строк прогресса скачивания (pip --progress-bar raw): {0}" -f @($cl | Where-Object { $_ -match "^\s+\d+%$" }).Count)
 }
 if ($extra) {
   & $py (Join-Path $Dir "app\setup\components.py") --headless --components $extra
@@ -104,7 +107,9 @@ EndGroup
 Group "check_env.py без системных программ в PATH"
 $savedPath = $env:PATH
 $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
+Push-Location $Dir   # корень для bench\env ищется от текущей папки
 $out = & $py (Join-Path $Dir "skills\kp-bench\scripts\check_env.py") --tester ci-bundled 2>&1
+Pop-Location
 $env:PATH = $savedPath
 $out | ForEach-Object { Write-Host "  | $_" }
 $text = $out -join "`n"

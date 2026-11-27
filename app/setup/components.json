@@ -1,5 +1,5 @@
 {
- "about": "Компоненты установки. Один список для мастера Inno Setup (installer/build.py генерирует секцию [Components]), окна установки компонентов (app/setup/components.py) и раздела «Установка» в интерфейсе. Объёмы — примерные: сумма колёс pip для Windows x64 и Python 3.12 без моделей (installer/probe_sizes.py); модели скачиваются при первом запуске теста.",
+ "about": "Компоненты установки. Один список для мастера Inno Setup (installer/build.py генерирует секцию [Components]), окна установки компонентов (app/setup/components.py) и раздела «Установка» в интерфейсе. Объёмы size_mb — примерный объём скачивания: сумма колёс pip для Windows x64 и Python 3.12 без моделей (installer/probe_sizes.py, прогон CI 27.11.2026); на диске после распаковки больше; модели скачиваются при первом запуске теста.",
  "components": [
   {
    "id": "base",
@@ -14,91 +14,183 @@
    "id": "text",
    "name": "Проверка текстов",
    "description": "humanizer-ru: находит в тексте приметы «написано нейросетью». Без моделей.",
-   "size_mb": 0,
+   "size_mb": 1,
    "venv": "asr",
-   "check": ["humanizer_ru"],
+   "check": [
+    "humanizer_ru"
+   ],
    "default": true,
    "steps": [
-    {"say": "Скачиваю проверщик текстов", "pip": ["humanizer-ru"]}
+    {
+     "say": "Скачиваю проверщик текстов",
+     "pip": [
+      "humanizer-ru"
+     ]
+    }
    ]
   },
   {
    "id": "stress",
    "name": "Ударения и чтение чисел",
-   "description": "Для озвучки: rutextnorm пишет числа и сокращения словами, silero-stress и RUAccent ставят ударения. Модели ударений скачаются при первом запуске.",
-   "size_mb": 0,
+   "description": "Для озвучки: rutextnorm пишет числа и сокращения словами, silero-stress и RUAccent ставят ударения. silero-stress ставит PyTorch для процессора. Модели ударений скачаются при первом запуске.",
+   "size_mb": 222,
    "venv": "asr",
-   "check": ["rutextnorm", "silero_stress", "ruaccent"],
+   "check": [
+    "rutextnorm",
+    "silero_stress",
+    "ruaccent"
+   ],
    "default": true,
    "steps": [
-    {"say": "Скачиваю библиотеки ударений", "pip": ["rutextnorm", "silero-stress", "ruaccent"]}
+    {
+     "say": "Скачиваю библиотеки ударений",
+     "pip": [
+      "rutextnorm",
+      "silero-stress",
+      "ruaccent"
+     ]
+    }
    ]
   },
   {
    "id": "edgetts",
    "name": "Озвучка Edge TTS (голоса Microsoft, нужен интернет)",
    "description": "Готовые голоса Microsoft. Текст уходит в облако Microsoft, без интернета не работает.",
-   "size_mb": 0,
+   "size_mb": 1,
    "venv": "asr",
-   "check": ["edge_tts"],
+   "check": [
+    "edge_tts"
+   ],
    "default": true,
    "steps": [
-    {"say": "Скачиваю Edge TTS", "pip": ["edge-tts"]}
+    {
+     "say": "Скачиваю Edge TTS",
+     "pip": [
+      "edge-tts"
+     ]
+    }
    ]
   },
   {
    "id": "dfn",
    "name": "Очистка звука от шума",
    "description": "DeepFilterNet убирает шум с записи голоса. Ставит PyTorch для процессора — большой объём.",
-   "size_mb": 0,
+   "size_mb": 147,
    "venv": "asr",
-   "check": ["torch", "deepfilternet"],
+   "check": [
+    "torch",
+    "deepfilternet"
+   ],
    "default": false,
    "steps": [
-    {"say": "Скачиваю PyTorch для процессора", "pip": ["torch", "torchaudio"], "index_url": "https://download.pytorch.org/whl/cpu"},
-    {"say": "Скачиваю DeepFilterNet", "pip": ["deepfilternet"]}
+    {
+     "say": "Скачиваю PyTorch для процессора",
+     "pip": [
+      "torch",
+      "torchaudio"
+     ],
+     "index_url": "https://download.pytorch.org/whl/cpu"
+    },
+    {
+     "say": "Скачиваю DeepFilterNet",
+     "pip": [
+      "deepfilternet"
+     ]
+    }
    ]
   },
   {
    "id": "asr",
    "name": "Распознавание речи: GigaAM и faster-whisper",
    "description": "Расшифровка записи в текст с таймкодами слов: GigaAM v3 (Сбер) и faster-whisper. Ставит PyTorch для процессора. Модели скачаются при первом распознавании.",
-   "size_mb": 0,
+   "size_mb": 234,
    "venv": "asr",
-   "check": ["torch", "gigaam", "faster_whisper"],
+   "check": [
+    "torch",
+    "gigaam",
+    "faster_whisper"
+   ],
    "default": false,
    "steps": [
-    {"say": "Скачиваю PyTorch для процессора", "pip": ["torch", "torchaudio"], "index_url": "https://download.pytorch.org/whl/cpu"},
-    {"say": "Скачиваю исходники GigaAM", "git_clone": "https://github.com/salute-developers/GigaAM.git", "dest": "bench/tools/GigaAM"},
-    {"say": "Ставлю GigaAM", "pip": ["-e", "bench/tools/GigaAM[torch]"]},
-    {"say": "Скачиваю faster-whisper", "pip": ["faster-whisper"]}
+    {
+     "say": "Скачиваю PyTorch для процессора",
+     "pip": [
+      "torch",
+      "torchaudio"
+     ],
+     "index_url": "https://download.pytorch.org/whl/cpu"
+    },
+    {
+     "say": "Скачиваю исходники GigaAM",
+     "git_clone": "https://github.com/salute-developers/GigaAM.git",
+     "dest": "bench/tools/GigaAM"
+    },
+    {
+     "say": "Ставлю GigaAM",
+     "pip": [
+      "-e",
+      "bench/tools/GigaAM[torch]"
+     ]
+    },
+    {
+     "say": "Скачиваю faster-whisper",
+     "pip": [
+      "faster-whisper"
+     ]
+    }
    ]
   },
   {
    "id": "whisperx",
    "name": "Распознавание WhisperX",
    "description": "Ещё один распознаватель для сравнения. Отдельное окружение со своей версией PyTorch — большой объём. Модели скачаются при первом запуске.",
-   "size_mb": 0,
+   "size_mb": 447,
    "venv": "whisperx",
-   "check": ["whisperx"],
+   "check": [
+    "whisperx"
+   ],
    "default": false,
    "steps": [
-    {"say": "Скачиваю WhisperX и PyTorch", "pip": ["whisperx"]}
+    {
+     "say": "Скачиваю WhisperX и PyTorch",
+     "pip": [
+      "whisperx"
+     ]
+    }
    ]
   },
   {
    "id": "qwen",
    "name": "Озвучка Qwen3-TTS (только видеокарта NVIDIA)",
    "description": "Клон голоса на своей видеокарте NVIDIA. Ставит PyTorch с CUDA — очень большой объём. Веса модели скачаются при первом синтезе.",
-   "size_mb": 0,
+   "size_mb": 2826,
    "venv": "tts",
    "nvidia": true,
-   "check": ["torch", "qwen_tts"],
+   "check": [
+    "torch",
+    "qwen_tts"
+   ],
    "default": false,
    "note": "Версия CUDA в index_url (cu128) — проверить на машине с NVIDIA.",
    "steps": [
-    {"say": "Скачиваю PyTorch для видеокарты NVIDIA", "pip": ["torch", "torchaudio"], "index_url": "https://download.pytorch.org/whl/cu128"},
-    {"say": "Скачиваю Qwen3-TTS", "pip": ["-U", "qwen-tts", "soundfile", "rutextnorm", "ruaccent"]}
+    {
+     "say": "Скачиваю PyTorch для видеокарты NVIDIA",
+     "pip": [
+      "torch",
+      "torchaudio"
+     ],
+     "index_url": "https://download.pytorch.org/whl/cu128"
+    },
+    {
+     "say": "Скачиваю Qwen3-TTS",
+     "pip": [
+      "-U",
+      "qwen-tts",
+      "soundfile",
+      "rutextnorm",
+      "ruaccent"
+     ]
+    }
    ]
   }
  ]

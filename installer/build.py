@@ -157,7 +157,10 @@ def gen_components(base_mb: float) -> tuple[str, str]:
     for i, c in enumerate(comps):
         mb = base_mb if c["id"] == "base" else (c.get("size_mb") or 0)
         size = size_text(mb)
-        caption = c["name"] + (f" ({size})" if size else "")
+        if size:
+            caption = c["name"] + (f" — {size} на диске" if c["id"] == "base" else f" — скачать {size}")
+        else:
+            caption = c["name"]
         parts = [f"Name: \"{c['id']}\"", f"Description: {iss_str(caption)}"]
         if c.get("default") or c.get("fixed"):
             parts.append("Types: custom")
