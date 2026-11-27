@@ -6,6 +6,7 @@
   pythonw app/setup/components.py --components text,stress     # окно (так запускает установщик)
   python  app/setup/components.py --headless --components text  # без окна: строки в консоль (CI, интерфейс)
   python  app/setup/components.py --headless --dry-run --components all --catalog fake.json   # только план
+  pythonw app/setup/components.py --dry-run --close-when-done --components all                # окно без установки (CI)
 
 Итог последнего запуска — data/setup/last.json. Код выхода в --headless: 0 — всё установлено или уже было,
 1 — была ошибка или отмена, 2 — неверные аргументы.
@@ -23,6 +24,7 @@ import shutil
 import subprocess
 import sys
 import threading
+import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -164,6 +166,7 @@ class Runner:
     catalog: list
     emit: object                               # emit(dict) — событие для окна или консоли
     dry_run: bool = False
+    dry_delay: float = 0.0                     # пауза на шаг в --dry-run с окном: чтобы было видно полосы
     results: list = field(default_factory=list)
     _cancel: bool = False
     _proc: subprocess.Popen | None = None
@@ -221,6 +224,7 @@ class Runner:
             self.emit({"t": "frac", "value": None})
             self.log("$ " + " ".join(f'"{a}"' if " " in str(a) else str(a) for a in st.argv))
             if self.dry_run:
+                time.sleep(self.dry_delay)
                 continue
             code, tail = self._exec(st)
             if self._cancel:
@@ -366,7 +370,7 @@ def open_interface(section: str = "") -> None:
         pass
 
 
-def gui(ids: list, catalog: list) -> int:
+def gui(ids: list, catalog: list, dry_run: bool = False, close_when_done: float = 0) -> int:
     try:
         import tkinter as tk
         from tkinter import messagebox, scrolledtext, ttk
@@ -394,7 +398,7 @@ def gui(ids: list, catalog: list) -> int:
     big = ("Segoe UI", 14, "bold") if IS_WIN else ("TkDefaultFont", 14, "bold")
 
     q: queue.Queue = queue.Queue()
-    runner = Runner(ids, catalog, q.put)
+    runner = Runner(ids, catalog, q.put, dry_run=dry_run, dry_delay=1.0 if dry_run else 0.0)
     n = max(1, len([i for i in ids if i in {c["id"] for c in catalog}]))
 
     frm = ttk.Frame(root, padding=16)
@@ -488,6 +492,8 @@ def gui(ids: list, catalog: list) -> int:
         ob = ttk.Button(btns, text="Открыть интерфейс", command=go)
         ob.pack(side="right")
         ob.focus_set()
+        if close_when_done:
+            root.after(int(close_when_done * 1000), root.destroy)
 
     def poll():
         try:
@@ -523,6 +529,11 @@ def gui(ids: list, catalog: list) -> int:
             pass
         root.after(100, poll)
 
+    # окно запускается из мастера установки — поднять его поверх мастера, потом вернуть обычный режим
+    root.lift()
+    root.attributes("-topmost", True)
+    root.after(800, lambda: root.attributes("-topmost", False))
+    root.focus_force()
     threading.Thread(target=runner.run, daemon=True, name="components").start()
     root.after(100, poll)
     root.mainloop()
@@ -544,6 +555,8 @@ def main(argv: list | None = None) -> int:
     ap.add_argument("--dry-run", action="store_true", help="только показать план, ничего не ставить")
     ap.add_argument("--catalog", type=Path, help="другой components.json (для проверки)")
     ap.add_argument("--list", action="store_true", help="показать компоненты и их состояние")
+    ap.add_argument("--close-when-done", type=float, default=0, metavar="СЕК",
+                    help="окно: закрыть через столько секунд после итога (для CI)")
     a = ap.parse_args(argv)
     bundled.apply_env()
     try:
@@ -570,9 +583,9 @@ def main(argv: list | None = None) -> int:
     else:
         ids = [c["id"] for c in catalog if c.get("default")]
     ids = [i for i in ids if i != "base"] or ids     # «Основу» ставит сам установщик
-    if a.headless or a.dry_run:
+    if a.headless:
         return headless(ids, catalog, a.dry_run)
-    return gui(ids, catalog)
+    return gui(ids, catalog, a.dry_run, a.close_when_done)
 
 
 if __name__ == "__main__":

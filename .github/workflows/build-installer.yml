@@ -86,6 +86,12 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Снимки мастера (для просмотра)
+        continue-on-error: true
+        timeout-minutes: 5
+        shell: pwsh
+        run: ./installer/wizard_shots.ps1 -Setup (Get-ChildItem installer/build/out/*.exe | Select-Object -First 1).FullName
+
       - name: Смоук — латинский путь
         shell: pwsh
         run: ./installer/smoke.ps1 -Setup (Get-ChildItem installer/build/out/*.exe | Select-Object -First 1).FullName -Dir "C:\cp-test"
@@ -93,6 +99,15 @@ jobs:
       - name: Смоук — кириллица и пробел в пути
         shell: pwsh
         run: ./installer/smoke.ps1 -Setup (Get-ChildItem installer/build/out/*.exe | Select-Object -First 1).FullName -Dir "C:\Тест Конвейер\cp" -ExpectNonAscii -Port 8800
+
+      - name: Снимки экрана
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ steps.ver.outputs.version }}
+          path: ${{ runner.temp }}/shots/*.png
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Логи при сбое
         if: failure()

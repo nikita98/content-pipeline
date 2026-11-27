@@ -27,6 +27,22 @@ $log = Join-Path $tmp ("setup-" + [guid]::NewGuid().ToString("N") + ".log")
 $py = Join-Path $Dir "tools\python\python.exe"
 $pyw = Join-Path $Dir "tools\python\pythonw.exe"
 $extra = ($Components -split "," | Where-Object { $_ -ne "base" }) -join ","
+$tag = if ($ExpectNonAscii) { "cyr" } else { "lat" }
+
+function Shot($name) {
+  # снимок экрана для artifact «screenshots» (проверка окон глазами)
+  try {
+    Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+    $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+    $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
+    $gr = [System.Drawing.Graphics]::FromImage($bmp)
+    $gr.CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
+    $dir = Join-Path $tmp "shots"
+    New-Item -ItemType Directory -Force $dir | Out-Null
+    $bmp.Save((Join-Path $dir "$name.png"), [System.Drawing.Imaging.ImageFormat]::Png)
+    $gr.Dispose(); $bmp.Dispose()
+  } catch { Write-Host "скриншот $name не снят: $_" }
+}
 
 # ---------- 1. тихая установка ----------
 Group "Установка в $Dir"
@@ -56,8 +72,11 @@ Ok (Test-Path $desk) "ярлык на рабочем столе"
 Ok (Test-Path $menu) "ярлык в меню «Пуск»"
 if (Test-Path $desk) {
   # строки в .lnk хранятся в UTF-16: ищем путь к pythonw.exe и server.py в самом файле
-  $lnkText = [System.Text.Encoding]::Unicode.GetString([System.IO.File]::ReadAllBytes($desk))
-  Ok ($lnkText.Contains((Join-Path $Dir "tools\python\pythonw.exe"))) "ярлык запускает встроенный pythonw.exe"
+  # (путь цели в LinkInfo может быть в однобайтовой кодировке, аргументы и рабочая папка — в UTF-16)
+  $bytes = [System.IO.File]::ReadAllBytes($desk)
+  $lnkText = [System.Text.Encoding]::Unicode.GetString($bytes) + [System.Text.Encoding]::Latin1.GetString($bytes)
+  Ok ($lnkText.Contains("tools\python\pythonw.exe")) "ярлык запускает встроенный pythonw.exe"
+  Ok ($lnkText.Contains($Dir)) "ярлык указывает в папку установки"
   Ok ($lnkText.Contains("app\server.py")) "ярлык открывает app\server.py"
 }
 EndGroup
@@ -98,6 +117,18 @@ if ($extra) {
   foreach ($r in $last.results) { Ok ($r.status -in @("ok", "already")) "компонент $($r.id): $($r.status) $($r.error)" }
   Ok (Test-Path (Join-Path $Dir "data\venv\asr\Scripts\python.exe")) "окружение data\venv\asr"
 }
+Group "Окно компонентов: pythonw + tkinter, без установки (--dry-run)"
+$g = Start-Process -FilePath $pyw -ArgumentList @("`"$(Join-Path $Dir 'app\setup\components.py')`"", "--dry-run", "--close-when-done", "6", "--components", "all") -WorkingDirectory $Dir -PassThru
+Start-Sleep -Seconds 4
+Shot "components-$tag-running"
+Start-Sleep -Seconds 10
+Shot "components-$tag-done"
+$exited = $g.WaitForExit(90000)
+if (-not $exited) { $g.Kill() }
+Ok ($exited -and $g.ExitCode -eq 0) "окно компонентов открылось, прошло план и закрылось (код $($g.ExitCode))"
+Ok (-not (Test-Path (Join-Path $Dir "data\setup\pending.json"))) "окно — tkinter (запасной путь через браузер не понадобился)"
+EndGroup
+
 & $py (Join-Path $Dir "app\setup\components.py") --list
 & $py (Join-Path $Dir "app\setup\components.py") --headless --dry-run --components all
 Ok ($LASTEXITCODE -eq 0) "components.py --dry-run --components all"
