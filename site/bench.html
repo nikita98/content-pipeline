@@ -108,10 +108,10 @@ footer{color:var(--mute);font-size:14px;border-top:1px solid var(--rule)}
   <p class="sub">Нужны Python 3.10+, Node 22+, ffmpeg и git. Видеокарта NVIDIA — только для Qwen3-TTS.</p>
   <ol class="steps">
     <li>Склонировать репозиторий: <code>git clone https://github.com/nikita98/content-pipeline</code></li>
-    <li>Поставить скилл стенда в папки агентов: <code>python tools/install_skills.py kp-bench</code></li>
-    <li>Открыть агента (Claude Code, Codex, Kimi Code, OpenCode) в папке репозитория и написать: «запусти тесты стека, я &lt;имя латиницей&gt;». Скилл проверит компьютер и предложит, с чего начать.</li>
+    <li>Запустить интерфейс двойным кликом: <code>start-bench.bat</code> (Windows) или <code>start-bench.command</code> (macOS, первый раз — правый клик → «Открыть»). Откроется страница в браузере; окно с сервером не закрывать. В «Настройках» указать имя латиницей и агента. Интерфейс проверит компьютер, поставит пакеты Python, запустит тесты и запишет результаты.</li>
+    <li>Без интерфейса: поставить скилл в папки агентов <code>python tools/install_skills.py kp-bench</code>, открыть агента (Claude Code, Codex, Kimi Code, OpenCode) в папке репозитория и написать: «запусти тесты стека, я &lt;имя латиницей&gt;».</li>
     <li>Для тестов голоса и монтажа прочитать вслух <code>skills/kp-bench/assets/inputs/script_ru.txt</code> на телефон (45–60 с) и записать 15 с свободной речи для клона.</li>
-    <li>После прогона скилл запишет результат в <code>bench/results/</code>. Затем <code>git pull --rebase</code> и <code>git push</code> — клетка на этой странице окрасится после следующей публикации.</li>
+    <li>Результаты пишутся в <code>bench/results/</code>. В интерфейсе — «Отправить в git» (если git настроен и есть права) или «Скачать результаты архивом» и переслать владельцу. В агенте — <code>git pull --rebase</code> и <code>git push</code>. Клетка на этой странице окрасится после следующей публикации.</li>
     <li>Платные тесты — только после «да» с суммой от того, кто платит. Ключи API — в своё окружение, не в чат и не в репозиторий.</li>
   </ol>
 </div></section>

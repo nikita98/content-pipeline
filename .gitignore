@@ -12,3 +12,5 @@ bench/tools/
 # копии скиллов, ставит tools/install_skills.py
 .claude/skills/
 .agents/skills/
+# локальный интерфейс: настройки этого компьютера
+app/settings.local.json
