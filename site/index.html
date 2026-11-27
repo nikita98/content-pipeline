@@ -110,6 +110,8 @@ footer{color:var(--mute);font-size:14px;border-top:1px solid var(--rule)}
 @media(max-width:900px){.step{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.step .tech-col{grid-column:1/-1}}
 @media(max-width:600px){.step{grid-template-columns:minmax(0,1fr);padding-left:40px}.tech{grid-template-columns:minmax(0,1fr)}table{font-size:13px}th,td{padding:6px 4px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--rule)}.stack td{display:flex;justify-content:space-between;gap:12px;border:0;padding:3px 0;text-align:right}.stack td::before{content:attr(data-l);color:var(--mute);text-align:left;flex:none;max-width:45%}tr.paid td:first-child{box-shadow:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.fig circle{transition:none!important}}
+#stk ul{margin:0;padding-left:1.1em}#stk li{margin:2px 0}#stk .lab{margin:6px 0 2px}#stk td:first-child{min-width:9em}
+@media(max-width:600px){#stk td::before{width:6.5em;max-width:none}#stk .cell{flex:1;min-width:0;text-align:left;overflow-wrap:anywhere}}
 </style>
 </head>
 <body>
@@ -126,7 +128,7 @@ footer{color:var(--mute);font-size:14px;border-top:1px solid var(--rule)}
     <div class="figs" id="figs"></div>
   </div>
 </header>
-<nav aria-label="Разделы"><div class="scroll"><a href="#steps">Шаги</a><a href="#services">Сервисы и цены</a><a href="#totals">Итого в месяц</a><a href="#compat">Какой ИИ у пользователя</a><a href="#library">Библиотека</a><a href="#decisions">Решения</a><a href="#roadmap">Порядок работ</a></div></nav>
+<nav aria-label="Разделы"><div class="scroll"><a href="#steps">Шаги</a><a href="#stack">Стек</a><a href="#services">Сервисы и цены</a><a href="#totals">Итого в месяц</a><a href="#compat">Какой ИИ у пользователя</a><a href="#library">Библиотека</a><a href="#decisions">Решения</a><a href="#roadmap">Порядок работ</a></div></nav>
 
 <section class="band" id="steps"><div class="wrap">
   <h2>Шаги сверху вниз</h2>
@@ -138,6 +140,12 @@ footer{color:var(--mute);font-size:14px;border-top:1px solid var(--rule)}
     <button type="button" id="f-a2" data-f="a2" aria-pressed="false">Агент 2</button>
   </div>
   <ol class="steps" id="list"></ol>
+</div></section>
+
+<section class="band" id="stack"><div class="wrap">
+  <h2>Стек по шагам</h2>
+  <p class="sub">Основной и запасной инструмент на каждый шаг. «В тест» — выбираем на этапе 3 по одному ролику. Имена со ссылкой — записи библиотеки. Данные — data/stack.json.</p>
+  <div class="scroll"><table class="stack" id="stk"><thead><tr><th>Шаг</th><th>Статус</th><th>Основной</th><th>В тест / запасной</th><th>Берём идею</th><th>Примечание</th></tr></thead><tbody></tbody></table></div>
 </div></section>
 
 <section class="band" id="services" style="background:var(--soft)"><div class="wrap">
@@ -318,6 +326,23 @@ fetch("data/library.json").then(r=>r.json()).then(j=>{D=j;
   ["q","fTopic","fStep","fVerdict","fKind","fPrice","fRu","fSrc","sort"].forEach(id=>$(id).addEventListener(id==="q"?"input":"change",render));
   render();
 }).catch(()=>{$("libCount").textContent="Не удалось загрузить library.json"});
+}
+</script>
+<script>
+{
+const e=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const STS={chosen:["Выбрано","v-take"],test:["В тест","v-check"],later:["Позже","v-no"]};
+const H=["Шаг","Статус","Основной","В тест / запасной","Берём идею","Примечание"];
+Promise.all(["stack","library","steps"].map(f=>fetch("data/"+f+".json").then(r=>{if(!r.ok)throw new Error(f);return r.json()}))).then(([ST,LB,SP])=>{
+  const by=Object.fromEntries(LB.map(r=>[r.id,r]));
+  const nm=Object.fromEntries(SP.map(s=>[s.n,s.name]));
+  const it=x=>{const r=by[x];return r?(r.url?`<a href="${e(r.url)}" target="_blank" rel="noopener">${e(r.name)}</a>`:e(r.name)):e(x)};
+  const ul=a=>a&&a.length?`<ul>${a.map(x=>`<li>${it(x)}</li>`).join("")}</ul>`:"—";
+  document.querySelector("#stk tbody").innerHTML=ST.steps.map(s=>{const t=STS[s.status]||[s.status,"v-check"];
+    const alt=(s.test&&s.test.length?`<p class="lab">В тест</p>${ul(s.test)}`:"")+(s.backup&&s.backup.length?`<p class="lab">Запасной</p>${ul(s.backup)}`:"");
+    const c=[`<b>${e(s.step)}</b> ${e(nm[s.step]||"")}`,`<span class="vd ${t[1]}">${e(t[0])}</span>`,ul(s.main),alt||"—",s.borrow&&s.borrow.length?`<ul>${s.borrow.map(x=>`<li>${e(x)}</li>`).join("")}</ul>`:"—",e(s.note)||"—"];
+    return `<tr>${c.map((x,i)=>`<td data-l="${H[i]}"><div class="cell">${x}</div></td>`).join("")}</tr>`}).join("");
+}).catch(()=>{document.querySelector("#stk tbody").innerHTML='<tr><td colspan="6">Не удалось загрузить stack.json</td></tr>'});
 }
 </script>
 </body>

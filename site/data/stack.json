@@ -1,0 +1,164 @@
+{
+ "updated": "2026-11-27",
+ "note": "Стек по шагам. Ссылки на записи library.json по id. status: chosen — выбрано; test — выбор после теста (этап 3); later — выбор на этапе 7.",
+ "steps": [
+  {
+   "step": "★",
+   "status": "chosen",
+   "main": ["kp-orchestrator (свой)", "vercel-labs-skills"],
+   "backup": ["kimi-code-plugins"],
+   "borrow": ["Этапы и бриф-контракт с подтверждением (Kanban Video Orchestrator, Hermes, MIT)", "Ворота одобрения и продолжение с места остановки (openmontage, только идея)"],
+   "note": "Управление из Telegram отложено (решение 3), кандидат cc-connect."
+  },
+  {
+   "step": "0",
+   "status": "chosen",
+   "main": ["kp-onboarding (свой)", "n1arko-redaktura-skills"],
+   "backup": ["coroboros-brand-voice"],
+   "borrow": ["Интервью блоками (workshop-researcher)", "9 вопросов бренда (claude-content-skills)"],
+   "note": "redpolitika — CC BY 4.0, нужна атрибуция авторов."
+  },
+  {
+   "step": "1",
+   "status": "chosen",
+   "main": ["claude-in-chrome", "playwright-mcp", "kirbah-mcp-youtube", "kevinwatt-yt-dlp-mcp", "bradautomates-claude-video", "gigaam"],
+   "backup": ["apify-mcp-server", "scrapecreators-social-research-skills", "chigwell-telegram-mcp"],
+   "borrow": ["Telegram через t.me/s/<канал> (решение 7)", "Формат VIDEO.md и проверка кадров агентом (rea-video, решение 8)"],
+   "note": "Apify — запасной по решению 7; ScrapeCreators — вариант с Threads и комментариями, платно."
+  },
+  {
+   "step": "2",
+   "status": "chosen",
+   "main": ["kp-ideas (свой)"],
+   "backup": [],
+   "borrow": ["Майнинг идей и хуков (vyralcontent-content-skills)", "Теги банка (swipe-file-marketinglendario)"],
+   "note": ""
+  },
+  {
+   "step": "3",
+   "status": "chosen",
+   "main": ["kp-plan (свой)"],
+   "backup": [],
+   "borrow": ["Каркас контекст-файла и календаря (blacktwist-social-media-skills, MIT)"],
+   "note": ""
+  },
+  {
+   "step": "4",
+   "status": "test",
+   "main": ["kp-copy (свой)"],
+   "test": ["vladimir-human-humanizer-ru", "miolamio-ru-editor", "talkstream-ru-text"],
+   "backup": [],
+   "borrow": ["Структуры постов (workshop-marketer)", "Тред для Threads (blacktwist-social-media-skills)", "Критерии и порог 35/50 (hardikpandya-stop-slop)"],
+   "note": "Проверщики текста — все три в тест (решение 19)."
+  },
+  {
+   "step": "5",
+   "status": "chosen",
+   "main": ["kp-carousel (свой)", "playwright-pillow-render", "google-fonts"],
+   "backup": ["canva", "canva-mcp"],
+   "borrow": ["HTML → PNG через Playwright (qwwiwi-carousel-instagram, MIT)"],
+   "note": "Решение 17: HTML → PNG по умолчанию, Canva — опция в паспорте."
+  },
+  {
+   "step": "6",
+   "status": "chosen",
+   "main": ["kp-script (свой)"],
+   "backup": [],
+   "borrow": ["Навык reels воркшопа", "hook-writing (thecraighewitt-skills, MIT)", "Таблица тайминг/речь/экран/b-roll (mohitagw15856-pm-claude-skills, лицензия не указана — только идея)"],
+   "note": ""
+  },
+  {
+   "step": "7",
+   "status": "chosen",
+   "main": ["kp-storyboard (свой)", "0xhughs-director-skills", "square-zero-labs-video-prompting-skill"],
+   "backup": ["dexhunter-seedance2-skill"],
+   "borrow": ["Тема-слой для консистентности (aicontentskills-ai-video-storyboard-skill)", "Лист персонажа (h4pplness-storyboard-skill, лицензии нет — только идея)"],
+   "note": ""
+  },
+  {
+   "step": "8",
+   "status": "test",
+   "main": ["kp-generate (свой)"],
+   "test": ["heygen-com-skills", "higgsfield-mcp", "fal-mcp-official", "elevenlabs-api-v4", "yandex-speechkit", "qwen3-tts", "rutextnorm", "silero-stress"],
+   "backup": ["replicate-mcp", "modal-runpod"],
+   "borrow": [],
+   "note": "Решение 12. Модели для клипов через fal: kling-4, wan-3, minimax-h3, seedance-2-0 (Mini)."
+  },
+  {
+   "step": "9",
+   "status": "chosen",
+   "main": ["agricidaniel-claude-shorts", "gigaam"],
+   "backup": ["autoclip"],
+   "borrow": ["Трекинг по движению рта (louisedesadeleer-clipify)"],
+   "note": "В claude-shorts ASR заменить на GigaAM."
+  },
+  {
+   "step": "10",
+   "status": "test",
+   "main": ["kp-edit (свой)", "gigaam", "deepfilternet", "auto-editor", "ffmpeg-audio-filters", "kajisho5-ffmpeg-skill", "moh4696-freecut"],
+   "test": ["remotion-dev-skills", "heygen-hyperframes"],
+   "backup": ["whisperx"],
+   "borrow": ["Инструкция «видеостудия» (workshop-remotion-studio)", "Стоки: pexels, pixabay, coverr, freesound"],
+   "note": "Решение 16: Remotion и HyperFrames — оба в тест. WhisperX — запасной ASR, выравнивание для ru есть; скилл theplasmak не ставим (сканер отметил высокий риск)."
+  },
+  {
+   "step": "11",
+   "status": "chosen",
+   "main": ["kp-qa (свой)", "kajisho5-qc-skill", "ffmpeg-audio-filters", "gigaam"],
+   "backup": ["agensi-video-export-qa"],
+   "borrow": ["Числа безопасных зон (reap-video-safe-zones, wavespeed-safe-zone-checker)", "Пресеты loudnorm −14/−1/11 (gooseworks-normalize-loudness, лицензия не указана — только идея)", "Проверка кадров агентом (gregory-esman-video-qa)"],
+   "note": "Скрипт безопасных зон пишем сами. Обратное распознавание озвучки GigaAM."
+  },
+  {
+   "step": "12",
+   "status": "chosen",
+   "main": ["postmypost"],
+   "backup": ["postiz"],
+   "borrow": ["Превью → одобрение → публикация (guyaga-social-media-skill)", "dry-run по умолчанию (tiktok-agent-publisher)"],
+   "note": "Решение 18. У Postmypost проверить: Reels и Shorts через API, тарифы, MCP."
+  },
+  {
+   "step": "13",
+   "status": "chosen",
+   "main": ["mikusnuz-meta-mcp", "asgard-mcp-youtube-analytics", "chigwell-telegram-mcp"],
+   "backup": ["claude-in-chrome", "playwright-mcp", "mrchevyceleb-youtube-mcp"],
+   "borrow": [],
+   "note": "meta-mcp — отключить публикацию. mcp-youtube-analytics требует Python 3.14+. TikTok — через браузер."
+  },
+  {
+   "step": "14",
+   "status": "chosen",
+   "main": ["kp-leadmagnet (свой)", "playwright-pillow-render"],
+   "backup": ["canva-mcp"],
+   "borrow": ["Структуры лид-магнитов (workshop-marketer)"],
+   "note": "Рендер как в шаге 5 (решение 17)."
+  },
+  {
+   "step": "15",
+   "status": "later",
+   "main": [],
+   "backup": [],
+   "test": ["chatplace", "openreply"],
+   "borrow": [],
+   "note": "Агент 2, этап 7."
+  }
+ ],
+ "library_updates": [
+  {"id": "square-zero-labs-video-prompting-skill", "checked": true, "license": "Apache-2.0", "stars": 197, "agents": ["claude", "codex"], "verdict": "take", "what": "Промпты для text/image-to-video и листов персонажа: MiniMax H3, Seedance 2.0/2.5, LTX-2/2.3/2.5, Veo 3/3.1, Wan 2.2, Wan Animate 2, Ovi; без ключей.", "verdict_note": "Справочник промптов шага 7."},
+  {"id": "h4pplness-storyboard-skill", "checked": true, "license": "unknown", "stars": 60, "agents": ["claude"], "verdict": "idea", "what": "Промпты постера-раскадровки 16:9, листа персонажа и видео; EN/VI; 4 коммита.", "verdict_note": "Лицензии нет — только идея."},
+  {"id": "claude-vision-skills-video", "checked": true, "verdict": "no", "verdict_note": "Нужен Docker, репозиторий и лицензия не указаны; на странице инструкции для ИИ."},
+  {"id": "gooseworks-brand-voice-extractor", "checked": true, "verdict": "no", "verdict_note": "SKILL.md не открывается, описание в индексе пустое; большинство goose-skills требуют кредиты GooseWorks."},
+  {"id": "clawhub-remotion-word-highlight-subtitles", "checked": true, "verdict": "no", "verdict_note": "Описания и источника на странице нет."},
+  {"id": "theplasmak-whisperx-skill", "checked": true, "license": "unknown", "verdict": "no", "what": "WhisperX: пословные таймкоды, диаризация, SRT/VTT/JSON; выравнивание для ru есть; нужен CUDA и токен HF для диаризации.", "verdict_note": "Сканер SkillsCat: высокий риск в setup.sh; берём upstream WhisperX."},
+  {"id": "whisperx", "checked": true, "ru": "yes", "ru_note": "Модель выравнивания для ru есть", "verdict": "take", "verdict_note": "Запасной ASR с пословными таймкодами."},
+  {"id": "gooseworks-normalize-loudness", "checked": true, "license": "unknown", "stars": 7, "price": "free", "verdict": "idea", "what": "Двухпроходный ffmpeg loudnorm, пресеты social −14/−1/11, broadcast, podcast.", "verdict_note": "Образец пресетов; лицензия не указана."},
+  {"id": "agensi-video-export-qa", "checked": true, "url": "https://github.com/sawizzle/video-export-qa", "license": "MIT OR Apache-2.0", "stars": 0, "price": "free", "agents": ["any"], "verdict": "take", "what": "Проверка экспорта: кодек, пиксельный формат, fps, длительность, громкость, true peak, тишина; Python stdlib, без сети.", "verdict_note": "Запасной измеритель шага 11; безопасных зон и субтитров нет."},
+  {"id": "claude-video-shorts", "checked": true, "license": "MIT", "stars": 40, "verdict": "no", "verdict_note": "ASR, VLM и языки не описаны; основа шага 9 — claude-shorts."},
+  {"id": "stock-images-mcp", "checked": true, "url": "https://github.com/jeanpfs/stock-images-mcp", "license": "MIT", "stars": 0, "verdict": "idea", "what": "MCP поиска и скачивания фото из Pexels, Unsplash, Pixabay; видео нет; ключ хотя бы одного стока.", "verdict_note": "Только фото, 0 звёзд."},
+  {"id": "openstory", "checked": true, "license": "MIT", "stars": 624, "verdict": "idea", "verdict_note": "Веб-приложение на fal и OpenRouter; образец, не ядро."},
+  {"id": "pexo-codex-skill", "checked": true, "verdict": "no", "verdict_note": "Платный облачный сервис; цены и API на сайте не описаны."},
+  {"id": "nousresearch-video-skills", "checked": true, "license": "MIT", "agents": [], "verdict": "idea", "verdict_note": "Kanban Video Orchestrator: этапы DISCOVER → BRIEF → TEAM → SETUP → EXECUTE → MONITOR, бриф подтверждает человек; только для Hermes Agent."},
+  {"id": "hermes-social-media-content-calendar", "checked": true, "license": "MIT", "verdict": "idea", "verdict_note": "7 шагов, у слота статусы draft / needs review / approved; для Hermes Agent."}
+ ],
+ "not_opened": "Скиллы сценариев коротких видео (aaron-he-zhu-short-video-scripter) и goose video-clipper не открыты: шаги 6 и 9 закрыты другими инструментами."
+}
