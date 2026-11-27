@@ -1,0 +1,42 @@
+[
+ {
+  "agent": "Claude (Claude Code / Cowork)",
+  "subscription": "Pro $20 / Max 5x $100",
+  "skills_path": "~/.claude/skills, .claude/skills",
+  "browser": "Claude in Chrome — входит в подписку",
+  "vision": "Да",
+  "notes": "Apify не нужен; коннекторы Canva, Higgsfield, Submagic, HeyGen, ChatPlace подключаются в настройках"
+ },
+ {
+  "agent": "ChatGPT + Codex",
+  "subscription": "Plus $20 / Pro от $100",
+  "skills_path": "$CWD/.agents/skills",
+  "browser": "Нет в подписке — Playwright MCP (бесплатно) или Apify",
+  "vision": "Проверить",
+  "notes": "Добавить Playwright MCP; MCP-серверы сервисов прописать в конфиг Codex"
+ },
+ {
+  "agent": "Kimi Code",
+  "subscription": "Plus $19 / Pro $39",
+  "skills_path": "~/.kimi-code/skills, ~/.agents/skills, .agents/skills",
+  "browser": "Нет в подписке — Playwright MCP или Apify",
+  "vision": "Да, у Kimi K3 нативно изображения и видео",
+  "notes": "Добавить Playwright MCP; MCP-серверы сервисов прописать в конфиг Kimi (формат проверить)"
+ },
+ {
+  "agent": "OpenCode",
+  "subscription": "Go $10 / Go Plus $40 / Zen или свой ключ — по расходу",
+  "skills_path": "~/.config/opencode/skills, .opencode/skills, .claude/skills, .agents/skills",
+  "browser": "Нет — Playwright MCP или Apify",
+  "vision": "Зависит от выбранной модели",
+  "notes": "Добавить Playwright MCP; MCP-серверы в opencode.json; подписка Claude здесь работает только через API-ключ"
+ },
+ {
+  "agent": "DeepSeek",
+  "subscription": "По расходу: V4.1 Flash $0.15 / $0.60 за 1 млн токенов, в часы пик ×2",
+  "skills_path": "Через OpenCode или DeepSeek Harness",
+  "browser": "Нет — Playwright MCP или Apify",
+  "vision": "V4.1 Flash — да; V4 Pro — нет",
+  "notes": "Не отдельный агент, а модель. Для шагов 10–11 брать V4.1 Flash или другую модель с распознаванием изображений"
+ }
+]

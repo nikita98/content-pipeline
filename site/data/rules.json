@@ -1,0 +1,26 @@
+[
+ {
+  "component": "Скиллы (SKILL.md)",
+  "todo": "Один набор файлов. Установщик кладёт его в .agents/skills (Codex, Kimi, OpenCode) и в .claude/skills (Claude, OpenCode). Во frontmatter только name, description, license, compatibility, metadata"
+ },
+ {
+  "component": "Коннекторы к сервисам",
+  "todo": "Только MCP-серверы по URL: Canva, Higgsfield, Submagic, HeyGen, ChatPlace, Postiz, Apify. Установщик прописывает их в конфиг выбранного агента; авторизацию проверить в каждом"
+ },
+ {
+  "component": "Браузер",
+  "todo": "В скиллах шаги 1 и 13 описаны через «браузер или Apify»; агент сам выбирает доступное: Claude in Chrome или Playwright MCP"
+ },
+ {
+  "component": "Список задач и прогресс",
+  "todo": "Не называть инструменты конкретного агента; прогресс вести в файле в папке клиента"
+ },
+ {
+  "component": "Модель",
+  "todo": "Шагам 10 и 11 нужна модель с распознаванием изображений и надёжным вызовом инструментов; остальные шаги допускают дешёвые модели"
+ },
+ {
+  "component": "Remotion, FFmpeg, Whisper",
+  "todo": "Работают локально одинаково во всех агентах"
+ }
+]

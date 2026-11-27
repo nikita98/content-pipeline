@@ -1,0 +1,165 @@
+{
+ "levels": {
+  "req": {
+   "label": "Обязательно",
+   "cls": "l-req"
+  },
+  "rec": {
+   "label": "Желательно",
+   "cls": "l-rec"
+  },
+  "opt": {
+   "label": "По выбору",
+   "cls": "l-opt"
+  },
+  "gen": {
+   "label": "Только для генерации видео",
+   "cls": "l-cond"
+  },
+  "a2": {
+   "label": "Только для Агента 2",
+   "cls": "l-cond"
+  },
+  "free": {
+   "label": "Бесплатно",
+   "cls": "l-free"
+  }
+ },
+ "items": [
+  {
+   "name": "ИИ-агент: Claude Pro или Max",
+   "steps": "все",
+   "why": "Агент, в котором работают все скиллы",
+   "price": "Pro $20 / Max 5x $100",
+   "level": "req",
+   "free_alt": "Другой агент: Codex, Kimi Code, OpenCode, DeepSeek",
+   "paid": true
+  },
+  {
+   "name": "Claude in Chrome",
+   "steps": "1, 13",
+   "why": "Страницы конкурентов и метрики",
+   "price": "входит в Claude",
+   "level": "free",
+   "free_alt": "Playwright MCP — в других агентах",
+   "paid": false
+  },
+  {
+   "name": "Remotion + Whisper",
+   "steps": "10",
+   "why": "Видеостудия: монтаж, субтитры на русском, шаблоны",
+   "price": "бесплатно; $25 за место, если в команде больше 3 человек",
+   "level": "free",
+   "free_alt": "—",
+   "paid": false
+  },
+  {
+   "name": "Canva Pro",
+   "steps": "5, 14",
+   "why": "Фирменный шаблон каруселей и коннектор",
+   "price": "≈ $15–18",
+   "level": "rec",
+   "free_alt": "HTML-шаблон → PNG",
+   "paid": true
+  },
+  {
+   "name": "Postmypost",
+   "steps": "12",
+   "why": "Автопостинг по расписанию",
+   "price": "≈ $16–20",
+   "level": "rec",
+   "free_alt": "Postiz на своём сервере или публикация вручную",
+   "paid": true
+  },
+  {
+   "name": "Higgsfield",
+   "steps": "8",
+   "why": "Аватар, клипы, перебивки, замена фона",
+   "price": "≈ $15–19 / Plus ≈ $49",
+   "level": "gen",
+   "free_alt": "Своя съёмка; модели на арендованном GPU (RunPod, Modal) с оплатой по минутам",
+   "paid": true
+  },
+  {
+   "name": "ElevenLabs",
+   "steps": "8",
+   "why": "Клон голоса и озвучка",
+   "price": "$6 / Creator $22",
+   "level": "opt",
+   "free_alt": "Edge TTS, Piper; клон голоса в Higgsfield",
+   "paid": true
+  },
+  {
+   "name": "HeyGen",
+   "steps": "8",
+   "why": "Аватар эксперта, есть коннектор",
+   "price": "$29 / Pro $49",
+   "level": "opt",
+   "free_alt": "Higgsfield или SoulX-FlashHead на арендованном GPU",
+   "paid": true
+  },
+  {
+   "name": "Apify",
+   "steps": "1",
+   "why": "Сбор данных о конкурентах, есть коннектор",
+   "price": "по использованию",
+   "level": "opt",
+   "free_alt": "Claude in Chrome",
+   "paid": true
+  },
+  {
+   "name": "OpusClip / Vizard",
+   "steps": "9",
+   "why": "Нарезка длинного видео",
+   "price": "OpusClip $15 / $29",
+   "level": "opt",
+   "free_alt": "claude-shorts, OpenShorts",
+   "paid": true
+  },
+  {
+   "name": "Submagic",
+   "steps": "10, 12",
+   "why": "Субтитры, редактор Iris, планер",
+   "price": "$19 / Pro $39",
+   "level": "opt",
+   "free_alt": "Remotion + Whisper",
+   "paid": true
+  },
+  {
+   "name": "Postiz (облако)",
+   "steps": "12",
+   "why": "Публикация, включая Telegram, есть коннектор",
+   "price": "$29–99",
+   "level": "opt",
+   "free_alt": "Postiz на своём сервере",
+   "paid": true
+  },
+  {
+   "name": "ChatPlace",
+   "steps": "15",
+   "why": "Бот в директе по кодовому слову",
+   "price": "бесплатно до 100 диалогов, Pro 2 000 ₽ (≈ $20)",
+   "level": "a2",
+   "free_alt": "OpenReply на своём сервере (только Instagram)",
+   "paid": true
+  },
+  {
+   "name": "Продамус",
+   "steps": "15",
+   "why": "Приём оплат, в том числе с иностранных карт",
+   "price": "% с каждой оплаты",
+   "level": "a2",
+   "free_alt": "Другой эквайринг",
+   "paid": true
+  },
+  {
+   "name": "Obsidian",
+   "steps": "все",
+   "why": "Ручная правка файлов папки клиента",
+   "price": "бесплатно",
+   "level": "free",
+   "free_alt": "—",
+   "paid": false
+  }
+ ]
+}
