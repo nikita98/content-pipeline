@@ -5,7 +5,9 @@
 ## Где мы
 Этап 3 «Тест голоса, генерации и монтажа» — идёт. Стенд готов: скилл `skills/kp-bench/`, каталог тестов и цены `site/data/bench.json`, страница https://claude.ai/artifact/EZrhygyXB5WRKvHrY9y4eu. Бесплатные тесты проводят тестировщики (владелец и коллеги), платные — позже, после «да» с суммой.
 
-Локальный интерфейс: `app/`, запуск двойным кликом `start.bat` (Windows) или `start.command` (macOS). Первый раздел — «Тесты», остальные шаги конвейера добавляются модулями (`app/README.md`). Решения 20–23. На Windows и macOS ещё не запускался.
+Локальный интерфейс: `app/`, запуск двойным кликом `start.bat` (Windows) или `start.command` (macOS). Первый раздел — «Тесты», остальные шаги конвейера добавляются модулями (`app/README.md`). Решения 20–23.
+
+Установщик для Windows без консоли и без прав администратора: https://github.com/nikita98/content-pipeline/releases/download/v0.1.0/ContentPipeline-Setup-0.1.0.exe (≈149 МБ, внутри Python, ffmpeg, Node, Git, auto-editor; компоненты галочками). Сборка и автотест на Windows — GitHub Actions (`installer/`, `.github/workflows/build-installer.yml`), новый релиз — по тегу `v*` (тег ставит владелец через «Draft a new release» на GitHub: из облачной сессии теги запрещены). Не проверены: ручной проход мастера, тяжёлые компоненты, SmartScreen и антивирус; exe без подписи кода.
 
 ## Что сделано
 - План и веб-страница; данные вынесены в `site/data/*.json`, план ссылается на них (`docs/plan.md`).
@@ -23,6 +25,8 @@
 4. **Минимальная версия:** паспорт → ресёрч → темы → тексты → сценарий → монтаж своей съёмки → проверка; в Claude и ещё одном агенте.
 
 ## Проверить до включения
+- Установщик: ручной проход мастера на русской Windows, масштаб 125–150 %, тяжёлые компоненты (распознавание, WhisperX, Qwen3-TTS на NVIDIA), реакция SmartScreen и антивируса (Dr.Web). Подпись кода — выбрать и купить сертификат.
+- «Ударения» тянут PyTorch (≈220 МБ).
 - Интерфейс на Windows и macOS: start.bat с кириллицей, установки пакетов, флаги OpenCode, сеть у Codex в workspace-write, `-o` у auto-editor, id пакетов winget. Kimi в фоне всегда с правами auto, в том числе для оценки текста.
 - Postmypost: Reels и Shorts через API, тарифы, MCP.
 - mcp-youtube-analytics требует Python 3.14+.
