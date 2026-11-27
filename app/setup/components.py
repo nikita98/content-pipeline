@@ -220,7 +220,7 @@ class Runner:
         for st in steps:
             if self._cancel:
                 return "cancelled", ""
-            self.emit({"t": "say", "text": f"{st.say}{', ' + size_text(c) if size_text(c) and st.pip else ''}"})
+            self.emit({"t": "say", "text": st.say})
             self.emit({"t": "frac", "value": None})
             self.log("$ " + " ".join(f'"{a}"' if " " in str(a) else str(a) for a in st.argv))
             if self.dry_run:
@@ -503,7 +503,8 @@ def gui(ids: list, catalog: list, dry_run: bool = False, close_when_done: float 
                 if t == "start":
                     state["index"] = ev["i"] - 1
                     overall["value"] = state["index"] * 100
-                    overall_lbl.config(text=f"Компонент {ev['i']} из {ev['n']}: {ev['name']}")
+                    overall_lbl.config(text=f"Компонент {ev['i']} из {ev['n']}: {ev['name']}"
+                                            + (f" (скачать {ev['size']})" if ev["size"] else ""))
                     cur_lbl.config(text="Проверяю…")
                     sub_lbl.config(text="")
                     log_line(f"── {ev['name']}")
