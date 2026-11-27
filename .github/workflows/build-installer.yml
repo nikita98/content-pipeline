@@ -1,0 +1,139 @@
+# Сборка Windows-установщика и смоук-тест на чистой машине GitHub Actions.
+# Ветка installer и ручной запуск — сборка + смоук + artifact; тег v* — ещё и релиз с exe.
+name: build-installer
+
+on:
+  push:
+    branches: [installer]
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      probe:
+        description: "Посчитать объёмы компонентов (probe_sizes.py)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-installer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 90
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Версия
+        id: ver
+        shell: pwsh
+        run: |
+          if ("${{ github.ref_type }}" -eq "tag" -and "${{ github.ref_name }}" -match '^v(\d+\.\d+\.\d+.*)$') { $v = $Matches[1] }
+          else { $v = "0.1.${{ github.run_number }}" }
+          "version=$v" >> $env:GITHUB_OUTPUT
+          Write-Host "Версия: $v"
+
+      - name: Кэш скачанных программ
+        uses: actions/cache@v4
+        with:
+          path: installer/cache
+          key: deps-${{ hashFiles('installer/deps.json') }}
+
+      - name: Inno Setup
+        id: inno
+        shell: pwsh
+        run: |
+          $iscc = @("${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe", "$env:ProgramFiles\Inno Setup 6\ISCC.exe", "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $iscc) {
+            Write-Host "Inno Setup не найден на образе — ставлю через choco"
+            choco install innosetup -y --no-progress
+            $iscc = @("${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe", "$env:ProgramFiles\Inno Setup 6\ISCC.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
+          } else { Write-Host "Inno Setup уже есть на образе: $iscc" }
+          if (-not $iscc) { throw "ISCC.exe не найден" }
+          "iscc=$iscc" >> $env:GITHUB_OUTPUT
+          if (-not (Test-Path (Join-Path (Split-Path $iscc) "Languages\Russian.isl"))) { throw "Нет Languages\Russian.isl" }
+
+      - name: Проверка скриптов
+        shell: pwsh
+        run: |
+          python -m py_compile app/server.py app/setup/components.py installer/build.py installer/fetch_deps.py installer/probe_sizes.py
+          Get-ChildItem app/core/*.py, app/modules/*.py, skills/kp-bench/scripts/*.py | ForEach-Object { python -m py_compile $_.FullName; if ($LASTEXITCODE) { exit 1 } }
+          Get-ChildItem -Recurse -Include *.json -Path app, site/data, installer -Exclude *cache* | Where-Object { $_.FullName -notmatch '\\(build|cache)\\' } | ForEach-Object { python -c "import json,sys;json.load(open(sys.argv[1],encoding='utf-8'))" $_.FullName; if ($LASTEXITCODE) { exit 1 } }
+
+      - name: Сборка
+        shell: pwsh
+        env:
+          PYTHONUTF8: "1"
+        run: python installer/build.py --version ${{ steps.ver.outputs.version }} --iscc "${{ steps.inno.outputs.iscc }}" --allow-unpinned
+
+      - name: Размер
+        shell: pwsh
+        run: Get-ChildItem installer/build/out/*.exe | ForEach-Object { "{0}  {1:N1} МБ" -f $_.Name, ($_.Length / 1MB) } | Tee-Object -Append $env:GITHUB_STEP_SUMMARY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ContentPipeline-Setup-${{ steps.ver.outputs.version }}
+          path: installer/build/out/*.exe
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Смоук — латинский путь
+        shell: pwsh
+        run: ./installer/smoke.ps1 -Setup (Get-ChildItem installer/build/out/*.exe | Select-Object -First 1).FullName -Dir "C:\cp-test"
+
+      - name: Смоук — кириллица и пробел в пути
+        shell: pwsh
+        run: ./installer/smoke.ps1 -Setup (Get-ChildItem installer/build/out/*.exe | Select-Object -First 1).FullName -Dir "C:\Тест Конвейер\cp" -ExpectNonAscii -Port 8800
+
+      - name: Логи при сбое
+        if: failure()
+        shell: pwsh
+        run: |
+          foreach ($d in @("C:\cp-test", "C:\Тест Конвейер\cp")) {
+            foreach ($f in @("data\logs\components.log", "data\logs\server.log")) {
+              $p = Join-Path $d $f
+              if (Test-Path $p) { Write-Host "== $p"; Get-Content $p -Encoding UTF8 | Select-Object -Last 80 }
+            }
+          }
+
+  probe:
+    if: github.event_name == 'workflow_dispatch' && inputs.probe || contains(github.event.head_commit.message, '[probe]')
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Объёмы компонентов
+        env:
+          PYTHONUTF8: "1"
+        run: python installer/probe_sizes.py
+
+  release:
+    if: github.ref_type == 'tag'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ContentPipeline-Setup-${{ needs.build.outputs.version }}
+          path: out
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: out/*.exe
+          name: Конвейер контента ${{ needs.build.outputs.version }}
+          body: |
+            Установщик для Windows 10/11 (64-бит): скачайте ContentPipeline-Setup-${{ needs.build.outputs.version }}.exe и запустите.
+            Права администратора не нужны. Файл не подписан: Windows может показать «Система Windows защитила ваш компьютер» — «Подробнее» → «Выполнить в любом случае».

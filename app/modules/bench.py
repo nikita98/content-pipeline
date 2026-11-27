@@ -12,7 +12,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from core import agents, gitops, tools
+from core import agents, bundled, gitops, tools
 from core.jobs import Cmd, Py
 from core.paths import ROOT, RUNS, PathError, check_tester, rel, safe_path
 
@@ -27,7 +27,7 @@ GIT_PATHS = ["bench/results", "bench/env", "site/data/bench_results.json"]
 VERDICTS = {"ok": "годится", "partial": "с оговорками", "no": "не годится", "fail": "не запустилось"}
 AUDIO_EXT = {".wav", ".mp3", ".m4a", ".ogg", ".flac", ".aac", ".webm", ".mp4", ".mov", ".opus"}
 VIDEO_EXT = {".mp4", ".mov", ".webm"}
-PY = sys.executable
+PY = bundled.console_python()   # под pythonw.exe скрипты запускаются через python.exe рядом
 RULINT_REPO = "https://github.com/miolamio/agent-skills"
 GIGAAM_REPO = "https://github.com/salute-developers/GigaAM.git"
 
@@ -154,7 +154,7 @@ def build_install(params: dict, app):
     steps: list = []
     if not tools.venv_exists(venv):
         steps.append(Cmd([*tools.base_python(), "-m", "venv", str(tools.venv_dir(venv))],
-                         label=f"создать окружение .venv-{venv}"))
+                         label=f"создать окружение {tools.venv_label(venv)}"))
     vpy = str(tools.venv_python(venv))
     pip = [vpy, "-m", "pip", "install", "--disable-pip-version-check"]
     if pid == "torch":
@@ -179,8 +179,8 @@ def build_venv(params: dict, app):
     if name not in ("asr", "whisperx", "tts"):
         raise ValueError("Окружение: asr, whisperx или tts")
     if tools.venv_exists(name):
-        raise ValueError(f"Окружение .venv-{name} уже есть.")
-    return [Cmd([*tools.base_python(), "-m", "venv", str(tools.venv_dir(name))])], f"Создать окружение .venv-{name}"
+        raise ValueError(f"Окружение {tools.venv_label(name)} уже есть.")
+    return [Cmd([*tools.base_python(), "-m", "venv", str(tools.venv_dir(name))])], f"Создать окружение {tools.venv_label(name)}"
 
 
 # --- простые действия -----------------------------------------------------------------------------
@@ -737,7 +737,7 @@ def state(req):
     nvidia = has_nvidia()
     s: dict = {"tester": t, "env": env, "nvidia": nvidia, "today": date.today().isoformat()}
     s["venvs"] = {n: tools.venv_exists(n) for n in ("asr", "whisperx", "tts")}
-    s["packs"] = [{"id": pid, "label": p["label"], "venv": p["venv"], "for": p["for"], "downloads": p["downloads"],
+    s["packs"] = [{"id": pid, "label": p["label"], "venv": p["venv"], "venv_label": tools.venv_label(p["venv"]), "for": p["for"], "downloads": p["downloads"],
                    "requires": p.get("requires"), "installed": pack_installed(pid),
                    "disabled": "нужна NVIDIA" if p.get("gpu") and not nvidia else ""} for pid, p in PACKS.items()]
     s["rec"] = {k: (rel(f) if (f := rec_file(t, k)) else None) for k in UPLOAD_KINDS}

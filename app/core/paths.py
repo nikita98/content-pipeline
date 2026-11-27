@@ -13,6 +13,14 @@ RUNS = ROOT / "bench" / "runs"          # тяжёлые файлы, логи, �
 LOG_DIR = RUNS / "_log"
 SETTINGS_FILE = APP_DIR / "settings.local.json"
 
+# Установленная копия (Windows-установщик): рядом лежит installed.json, программы — в tools/, тяжёлое — в data/.
+# Копия из git (start.bat, start.command) работает как раньше: системные программы, окружения .venv-* в корне.
+INSTALL_INFO = ROOT / "installed.json"
+INSTALLED = INSTALL_INFO.is_file()
+DATA = ROOT / "data"                     # lock-файл сервера, логи; в установленной копии — ещё venv, модели, кэш
+BUNDLED = ROOT / "tools"                 # встроенные программы установленной копии
+IS_GIT = (ROOT / ".git").exists()
+
 IS_WIN = sys.platform.startswith("win")
 IS_MAC = sys.platform == "darwin"
 

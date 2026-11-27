@@ -1,7 +1,7 @@
 """Внешние программы и окружения Python (venv).
 
 Внешние программы (Python, Node, ffmpeg, git, auto-editor) интерфейс НЕ ставит: показывает команду для ОС
-тестировщика. Окружения venv создаются и наполняются действиями белого списка (pip install в venv).
+тестировщика. В установленной копии (Windows-установщик) они встроены в папку tools/ и находятся первыми. Окружения venv создаются и наполняются действиями белого списка (pip install в venv).
 Команды winget и brew — из skills/kp-bench/references/install.md; помеченные там «проверить» — проверить.
 """
 from __future__ import annotations
@@ -12,9 +12,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+from . import bundled
 from .agents import find_exe
 from .jobs import child_env
-from .paths import IS_MAC, IS_WIN, ROOT
+from .paths import INSTALLED, IS_MAC, IS_WIN, ROOT
 
 OS_ID = "windows" if IS_WIN else ("macos" if IS_MAC else "linux")
 
@@ -53,25 +54,36 @@ def detect_external() -> list[dict]:
     out = []
     for tid, t in EXTERNAL.items():
         if tid == "python":
-            path, ver = sys.executable, "Python " + sys.version.split()[0]
+            path, ver = bundled.console_python(), "Python " + sys.version.split()[0]
         else:
             path = find_exe(t["exe"])
             ver = _version(path, t["version"]) if path else None
+        install = t["install"].get(OS_ID, "")
+        if INSTALLED:
+            install = "Входит в установку. Если пропала — запустите установщик ещё раз (папка та же)."
         out.append({"id": tid, "name": t["name"], "found": bool(path), "path": path, "version": ver,
-                    "install": t["install"].get(OS_ID, ""), "note": t.get("note", ""), "os": OS_ID})
+                    "bundled": bundled.is_bundled(path), "install": install,
+                    "note": "" if INSTALLED else t.get("note", ""), "os": OS_ID})
     return out
 
 
 def exe(tid: str) -> str | None:
     if tid == "python":
-        return sys.executable
+        return bundled.console_python()
     return find_exe(EXTERNAL[tid]["exe"])
 
 
 # --- окружения Python ---------------------------------------------------------------------------
 
 def venv_dir(name: str) -> Path:
+    """Копия из git — .venv-<имя> в корне; установленная копия — data/venv/<имя>."""
+    if bundled.VENV_ROOT is not None:
+        return bundled.VENV_ROOT / name
     return ROOT / f".venv-{name}"
+
+
+def venv_label(name: str) -> str:
+    return f"data/venv/{name}" if bundled.VENV_ROOT is not None else f".venv-{name}"
 
 
 def venv_python(name: str) -> Path:
@@ -108,7 +120,11 @@ def installed(name: str, dist: str) -> bool:
 
 
 def base_python() -> list[str]:
-    """Python для создания venv. install.md советует 3.12 (колёса torch); если его нет — тот, что запустил интерфейс."""
+    """Python для создания venv. Встроенный 3.12, если есть; иначе install.md советует 3.12 (колёса torch);
+    если его нет — тот, что запустил интерфейс."""
+    bp = bundled.bundled_python()
+    if bp:
+        return [str(bp)]
     if IS_WIN and shutil.which("py"):
         try:
             r = subprocess.run(["py", "-3.12", "-c", "import sys;print(sys.executable)"], capture_output=True, timeout=20)
@@ -120,4 +136,4 @@ def base_python() -> list[str]:
         p = shutil.which("python3.12")
         if p:
             return [p]
-    return [sys.executable]
+    return [bundled.console_python()]

@@ -120,6 +120,13 @@
       if (j && j.state === "done") toast("Отправлено в git");
     });
     const zipFallback = () => { const b = h("button", { class: "btn small", type: "button" }, "Скачать архивом"); b.addEventListener("click", exportZip); return b; };
+    if (!KP.meta.git_repo) {
+      // установленная копия или архив — не git-клон: основной путь — архив (решение 22)
+      zipBtn.className = "btn primary";
+      return h("div", { class: "stack" }, h("hr", { class: "sep" }), h("h3", {}, "Отправить результаты"),
+        h("p", { class: "muted small" }, "Скачайте архив с результатами и перешлите его владельцу проекта (почтой или в мессенджере)."),
+        h("div", { class: "row" }, zipBtn), box);
+    }
     return h("div", { class: "stack" }, h("hr", { class: "sep" }), h("h3", {}, "Отправить результаты"),
       h("p", { class: "muted small" }, "Если git настроен и есть права — «Отправить в git». Если нет — архив: его можно переслать владельцу."),
       h("div", { class: "row" }, gitBtn, zipBtn), box);
@@ -137,11 +144,11 @@
         h("tbody", {}, S.packs.map(p => h("tr", {},
           h("td", {}, h("b", {}, p.label), " ", p.installed ? h("span", { class: "badge ok" }, "установлен") : null),
           h("td", { class: "small" }, p.for),
-          h("td", { class: "small" }, h("code", {}, ".venv-" + p.venv)),
+          h("td", { class: "small" }, h("code", {}, p.venv_label || ".venv-" + p.venv)),
           h("td", {}, p.disabled ? h("span", { class: "reason" }, p.disabled) : KP.actionButton({
             label: p.installed ? "Переустановить" : "Установить", action: "bench.install", params: { pack: p.id, tester: T },
             warn: [h("p", {}, `Будет скачано: ${p.downloads}`), p.requires ? h("p", {}, `Сначала должен быть установлен пакет «${S.packs.find(x => x.id === p.requires).label}».`) : null,
-              h("p", { class: "muted small" }, `Установка в окружение .venv-${p.venv} в папке проекта (в git не попадает). Отменить можно кнопкой «Остановить».`)],
+              h("p", { class: "muted small" }, `Установка в окружение ${p.venv_label || ".venv-" + p.venv} в папке проекта (в git не попадает). Отменить можно кнопкой «Остановить».`)],
             onDone: refresh }, box))))))));
     });
     const recBox = h("div", { class: "grid2" });

@@ -27,6 +27,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+from .bundled import find_bundled
 from .jobs import Cmd, child_env
 from .paths import IS_WIN, ROOT, RUNS, rel
 
@@ -83,8 +84,9 @@ def _extra_dirs() -> list[Path]:
 
 
 def find_exe(exe: str) -> str | None:
-    """shutil.which учитывает PATHEXT на Windows (.exe, .cmd); дополнительно — типичные папки установки."""
-    found = shutil.which(exe)
+    """Сначала встроенные программы установленной копии (tools/), затем PATH (shutil.which учитывает PATHEXT
+    на Windows: .exe, .cmd), затем типичные папки установки агентов."""
+    found = find_bundled(exe) or shutil.which(exe)
     if found:
         return found
     for d in _extra_dirs():

@@ -276,7 +276,7 @@
     try { d = await api("/api/tools"); } catch (e) { box.replaceChildren(h("div", { class: "errbox" }, e.message)); return; }
     const rows = d.tools.map(t => h("tr", {},
       h("td", {}, h("b", {}, t.name)),
-      h("td", {}, t.found ? h("span", { class: "badge ok" }, "есть") : h("span", { class: "badge bad" }, "нет")),
+      h("td", {}, t.found ? h("span", { class: "badge ok" }, t.bundled ? "встроена" : "есть") : h("span", { class: "badge bad" }, "нет")),
       h("td", { class: "small" }, t.found ? (t.version || t.path) : h("div", { class: "stack" },
         h("div", { class: "row" }, h("code", {}, t.install), t.install && !/^Скачать/.test(t.install) ? copyBtn(t.install) : null),
         t.note ? h("span", { class: "muted" }, t.note) : null))));
@@ -284,7 +284,9 @@
     again.addEventListener("click", () => toolsTable(box));
     box.replaceChildren(
       h("div", { class: "scroll" }, h("table", { class: "t" }, h("thead", {}, h("tr", {}, h("th", {}, "Программа"), h("th", {}, "Статус"), h("th", {}, "Версия или как поставить"))), h("tbody", {}, rows))),
-      h("p", { class: "muted small" }, `Интерфейс не ставит программы сам. Выполните команду в терминале (${d.os === "windows" ? "PowerShell" : "Терминал"}), затем «Проверить снова». После установки иногда нужно перезапустить интерфейс.`),
+      KP.meta && KP.meta.installed
+        ? h("p", { class: "muted small" }, "Программы встроены в установку (папка tools). Пакеты Python и модели — раздел «Установка».")
+        : h("p", { class: "muted small" }, `Интерфейс не ставит программы сам. Выполните команду в терминале (${d.os === "windows" ? "PowerShell" : "Терминал"}), затем «Проверить снова». После установки иногда нужно перезапустить интерфейс.`),
       again);
   }
 
@@ -307,7 +309,7 @@
     const cur = current();
     const bySkill = Object.fromEntries(KP.meta.sections.filter(s => s.skill).map(s => [s.skill, s]));
     const items = [];
-    for (const s of KP.meta.sections.filter(s => !s.skill && s.id !== "settings")) items.push(h("li", {}, h("a", { href: "#" + s.id, "aria-current": cur === s.id ? "page" : null }, s.title)));
+    for (const s of KP.meta.sections.filter(s => !s.skill && (s.order || 0) < 800)) items.push(h("li", {}, h("a", { href: "#" + s.id, "aria-current": cur === s.id ? "page" : null }, s.title)));
     items.push(h("li", { class: "group", role: "presentation" }, "Шаги конвейера"));
     for (const st of KP.meta.steps) {
       const sec = bySkill[st.skill];
@@ -315,8 +317,12 @@
       items.push(h("li", {}, sec ? h("a", { href: "#" + sec.id, "aria-current": cur === sec.id ? "page" : null }, label)
         : h("span", { class: "soon", "aria-disabled": "true", title: st.name }, label, h("span", { class: "tag" }, "скоро"))));
     }
-    const set = KP.meta.sections.find(s => s.id === "settings");
-    if (set) { items.push(h("li", { class: "group", role: "presentation" }, "Служебное")); items.push(h("li", {}, h("a", { href: "#settings", "aria-current": cur === "settings" ? "page" : null }, set.title))); }
+    // служебные разделы: order >= 800 (Установка, Настройки)
+    const service = KP.meta.sections.filter(s => !s.skill && (s.order || 0) >= 800);
+    if (service.length) {
+      items.push(h("li", { class: "group", role: "presentation" }, "Служебное"));
+      for (const s of service) items.push(h("li", {}, h("a", { href: "#" + s.id, "aria-current": cur === s.id ? "page" : null }, s.title)));
+    }
     ul.replaceChildren(...items);
   }
   const loaded = new Set();
@@ -338,6 +344,24 @@
     main.focus({ preventScroll: true });
   }
   window.addEventListener("hashchange", route);
+
+  // ---------- выход и heartbeat ----------
+  // Сервер останавливается сам, если браузер молчит 10 минут: вкладка раз в минуту сообщает, что открыта.
+  let stopped = false;
+  setInterval(() => { if (!stopped) api("/api/heartbeat", { body: {} }).catch(() => {}); }, 60000);
+  function stoppedScreen() {
+    stopped = true;
+    document.getElementById("nav").replaceChildren();
+    document.getElementById("main").replaceChildren(h("h1", {}, "Интерфейс остановлен"),
+      h("p", {}, "Эту вкладку можно закрыть. Чтобы начать снова — ярлык «Конвейер контента» на рабочем столе."));
+  }
+  document.getElementById("exit-btn").addEventListener("click", async () => {
+    const body = ["Интерфейс остановится на этом компьютере. Открыть снова — ярлыком «Конвейер контента»."];
+    if (active.size) body.unshift(`Сейчас идёт задача: ${[...active][0]}. Она будет остановлена.`);
+    if (!(await confirmBox("Выйти?", body))) return;
+    try { await api("/api/shutdown", { body: {} }); } catch (e) { /* сервер мог уже остановиться */ }
+    stoppedScreen();
+  });
   window.addEventListener("error", e => toast("Ошибка страницы: " + e.message, true));
 
   api("/api/meta").then(m => { KP.meta = m; chip(); m.sections.forEach(loadJs); route(); })

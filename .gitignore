@@ -14,3 +14,9 @@ bench/tools/
 .agents/skills/
 # локальный интерфейс: настройки этого компьютера
 app/settings.local.json
+# локальный интерфейс: lock-файл, логи; в установленной копии — окружения, модели, кэш
+/data/
+# установщик: сборка и скачанные программы
+installer/build/
+installer/cache/
+/installed.json

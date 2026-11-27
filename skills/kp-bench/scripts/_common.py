@@ -11,6 +11,22 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
     sys.stderr.reconfigure(encoding="utf-8")
 
+# Установленная копия (Windows-установщик): программы встроены в <папка установки>/tools/.
+# Ставим их в начало PATH, чтобы скрипты находили их и без интерфейса. В копии из git папок нет — PATH не меняется.
+BUNDLED_DIRS = ["python", "python/Scripts", "ffmpeg/bin", "node", "mingit/cmd", "auto-editor"]
+
+
+def use_bundled_tools() -> list[str]:
+    base = Path(__file__).resolve().parents[3] / "tools"
+    dirs = [str(base / d) for d in BUNDLED_DIRS if (base / d).is_dir()]
+    if dirs:
+        rest = [p for p in os.environ.get("PATH", "").split(os.pathsep) if p and p not in dirs]
+        os.environ["PATH"] = os.pathsep.join(dirs + rest)
+    return dirs
+
+
+use_bundled_tools()
+
 
 def repo_root(start: Path | None = None) -> Path:
     """Ищет корень репозитория по файлу site/data/bench.json."""

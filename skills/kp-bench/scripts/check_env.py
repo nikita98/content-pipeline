@@ -1,4 +1,5 @@
-"""Проверка среды тестировщика: Python, Node, ffmpeg, git, видеокарта, место на диске.
+"""Проверка среды тестировщика: Python, Node, ffmpeg, git, auto-editor, видеокарта, место на диске.
+Встроенные программы установленной копии (папка tools/) находятся первыми — см. _common.use_bundled_tools().
 
 Пример:
   python skills/kp-bench/scripts/check_env.py --tester nikita
@@ -59,6 +60,8 @@ def main() -> None:
         "npm": run(["npm", "--version"]),
         "ffmpeg": run(["ffmpeg", "-version"]),
         "git": run(["git", "--version"]),
+        "auto_editor": run(["auto-editor", "--version"]),
+        "installed": (root / "installed.json").is_file(),
         "gpu": gpu(),
         "disk_free_gb": free_gb,
     }
@@ -74,6 +77,7 @@ def main() -> None:
     print(f"Тестировщик: {env['tester']}   ОС: {env['os']} {env['machine']}")
     for k in ["python", "node", "ffmpeg", "git"]:
         print(f"  {'OK ' if need[k] else 'НЕТ'}  {k:7} {env[k] or 'не найден'}")
+    print(f"  {'OK ' if env['auto_editor'] else '-- '}  auto-editor {env['auto_editor'] or 'не найден (нужен для voice-clean)'}")
     g = env["gpu"]
     print(f"  {'OK ' if g.get('nvidia') else '-- '}  gpu     {g.get('name', 'NVIDIA не найдена')} {g.get('vram', '')}")
     print(f"  {'OK ' if need['disk_free_gb'] else 'МАЛО'}  disk    {free_gb} ГБ свободно (нужно от 20 ГБ на модели)")

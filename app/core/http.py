@@ -15,6 +15,8 @@ import mimetypes
 import re
 import secrets
 import shutil
+import threading
+import time
 import traceback
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -23,7 +25,7 @@ from urllib.parse import parse_qs, quote, urlparse
 
 from . import agents, settings, tools
 from .jobs import JobBusy, JobManager
-from .paths import IS_WIN, RUNS, WEB_DIR, PathError, check_tester, rel, safe_path
+from .paths import INSTALL_INFO, INSTALLED, IS_GIT, IS_WIN, RUNS, WEB_DIR, PathError, check_tester, rel, safe_path
 from .registry import Registry, pipeline_steps
 
 MAX_JSON = 2 * 1024 * 1024
@@ -57,9 +59,19 @@ class App(Registry):
     def __init__(self) -> None:
         super().__init__()
         self.token = secrets.token_urlsafe(32)
+        self.instance = secrets.token_hex(8)   # для проверки «это наш сервер» при повторном запуске ярлыка
         self.jobs = JobManager()
         self.port = 0
         self.modules: list[str] = []
+        self.last_seen = time.time()           # последний запрос из браузера (автоостановка без heartbeat)
+        self.on_shutdown = None                # функция остановки сервера, задаёт server.py
+
+    def touch(self) -> None:
+        self.last_seen = time.time()
+
+    def request_shutdown(self) -> None:
+        if self.on_shutdown:
+            threading.Thread(target=self.on_shutdown, daemon=True, name="shutdown").start()
 
     # удобные функции для модулей
     def settings(self) -> dict:
@@ -134,6 +146,10 @@ class Handler(BaseHTTPRequestHandler):
         u = urlparse(self.path)
         q = parse_qs(u.query)
         path = u.path
+        if path == "/api/ping":
+            # без токена: только признак, что на порту наш сервер; секретов не отдаёт
+            return self.json(200, {"app": "content-pipeline", "instance": self.app.instance})
+        self.app.touch()
         try:
             if path in ("/", "/index.html"):
                 return self.index()
@@ -177,7 +193,16 @@ class Handler(BaseHTTPRequestHandler):
         u = urlparse(self.path)
         q = parse_qs(u.query)
         path = u.path
+        self.app.touch()
         try:
+            if path == "/api/heartbeat":
+                self.read_json()
+                return self.json(200, {"ok": True})
+            if path == "/api/shutdown":
+                self.read_json()
+                self.json(200, {"ok": True})
+                self.app.request_shutdown()
+                return None
             if path == "/api/upload":
                 return self.upload(q)
             body = self.read_json()
@@ -216,11 +241,15 @@ class Handler(BaseHTTPRequestHandler):
         a = self.app
         secs = sorted(a.sections.values(), key=lambda s: s.order)
         return {
-            "sections": [{"id": s.id, "title": s.title, "js": s.js, "skill": s.skill, "hint": s.hint} for s in secs],
+            "sections": [{"id": s.id, "title": s.title, "js": s.js, "skill": s.skill, "hint": s.hint, "order": s.order}
+                         for s in secs],
             "steps": pipeline_steps(),
             "settings": settings.load(),
             "os": tools.OS_ID,
             "modules": a.modules,
+            "installed": INSTALLED,
+            "git_repo": IS_GIT,
+            "version": _version(),
         }
 
     def index(self) -> None:
@@ -348,6 +377,15 @@ class Handler(BaseHTTPRequestHandler):
                 old.unlink()
         shutil.move(str(tmp), str(dst))
         return self.json(200, {"ok": True, "path": rel(dst), "bytes": n})
+
+
+def _version() -> str:
+    if not INSTALLED:
+        return ""
+    try:
+        return str(json.loads(INSTALL_INFO.read_text(encoding="utf-8")).get("version", ""))
+    except (OSError, ValueError):
+        return ""
 
 
 class Server(ThreadingHTTPServer):
