@@ -34,7 +34,7 @@
 - Оплата зарубежных сервисов из РФ.
 
 ## Где что лежит
-- Репозиторий: этот (`README.md` — структура).
+- Репозиторий: https://github.com/nikita98/content-pipeline (`README.md` — структура).
 - Папка на компьютере: `C:\claude\Projects\content pipeline\dev\content-pipeline`.
 - Конкуренты (архивы): `C:\claude\Projects\content pipeline\dev\competitors`.
 - Веб-страница: https://claude.ai/artifact/6VNrHvwcXVbcU2gBeUGq7B.
