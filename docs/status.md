@@ -51,11 +51,11 @@
 
 ## Где что лежит
 - Репозиторий: https://github.com/nikita98/content-pipeline (`README.md` — структура).
-- Папка на компьютере: `C:\claude\Projects\content pipeline\dev\content-pipeline`.
-- Конкуренты (архивы): `C:\claude\Projects\content pipeline\dev\competitors`.
+- Папка на компьютере: `E:\Claude\projects\content_pipeline\content-pipeline` (с 28.11.2026 работа в Claude Code).
+- Конкуренты (архивы): раньше `C:\claude\Projects\content pipeline\dev\competitors`; на новом месте не найдены — проверить.
 - Веб-страница: https://claude.ai/artifact/6VNrHvwcXVbcU2gBeUGq7B.
 - Проект Claude «Конвеер контента»: копии плана, статуса, разборов и ресёрча для чатов.
 - Правила для агентов: `AGENTS.md` (Claude читает его через `CLAUDE.md`).
 
-## Как начать новый чат
-«Прочитай docs/status.md и AGENTS.md. Продолжаем: форматы файлов (этап 4)» — или для тестировщика: «запусти тесты стека, я <имя>».
+## Как начать новую сессию
+Claude Code читает `CLAUDE.md` → `AGENTS.md` сам; Codex, Kimi Code, OpenCode — `AGENTS.md`. Достаточно: «Прочитай docs/status.md. Продолжаем: форматы файлов (этап 4)» — или для тестировщика: «запусти тесты стека, я <имя>».
